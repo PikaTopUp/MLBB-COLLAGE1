@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MLBB Skin Collage Tool - Real Assets Edition</title>
+  <title>MLBB Skin Collage Tool - Official CDNs</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -102,42 +102,34 @@
   </main>
 
   <script>
-    // CORS-safe proxy wrapper to guarantee external artwork loads and exports cleanly
-    const proxy = (url) => `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=200&h=200&fit=cover&output=webp`;
-
-    // Authentic MLBB Artwork Catalog grouped by Tiers
+    // Authentic Moonton Live CDN URLs (No proxy required)
     const SKIN_DATABASE = [
       // LEGEND
-      { id: "leg_1", hero: "Miya", name: "Modena Butterfly", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/1/14/Modena_Butterfly.png") },
-      { id: "leg_2", hero: "Gord", name: "Conqueror", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/4/41/Conqueror.png") },
-      { id: "leg_3", hero: "Alucard", name: "Obsidian Blade", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/b/b3/Obsidian_Blade.png") },
-      { id: "leg_4", hero: "Lesley", name: "Angelic Agent", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/9/91/Angelic_Agent.png") },
-      { id: "leg_5", hero: "Gusion", name: "Cosmic Gleam", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/e/e0/Cosmic_Gleam.png") },
-      { id: "leg_6", hero: "Valir", name: "Infernal Blaze", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/8/87/Infernal_Blaze.png") },
-      { id: "leg_7", hero: "Franco", name: "King of Hell", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/a/a2/King_of_Hell.png") },
-      { id: "leg_8", hero: "Freya", name: "Galactic Vanquisher", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/d/df/Galactic_Vanquisher.png") },
-      
+      { id: "leg_1", hero: "Miya", name: "Modena Butterfly", tier: "Legend", img: "https://indoch.s3.ml.moonlian.com/web/madmin/image_a844f9aa51baefa6878801edd85fec5e.png" },
+      { id: "leg_2", hero: "Alucard", name: "Obsidian Blade", tier: "Legend", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_2f53289ddd423fa9bc95d380b6d79719.jpg" },
+      { id: "leg_3", hero: "Saber", name: "Codename - Storm", tier: "Legend", img: "https://akmweb.youngjoygame.com/web/madmin/image/35a5d68d1704e2c4c6323abd4859a622.jpg?w=100-100-4b3f67" },
+      { id: "leg_4", hero: "Franco", name: "King of Hell", tier: "Legend", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_07605801972ede9147e9769ac7991aa0.png" },
+      { id: "leg_5", hero: "Alpha", name: "Onimusha", tier: "Legend", img: "https://akmweb.youngjoygame.com/web/madmin/image/796cd5f6a8ba0e76226fd0cd6866eb1e.jpg?w=100-100-28181b" },
+      { id: "leg_6", hero: "Fanny", name: "Skylark", tier: "Legend", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_523a730c11b8c22fc6c3fcc5575c29a2.png" },
+
       // COLLECTOR
-      { id: "col_1", hero: "Pharsa", name: "Empress Phoenix", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/3/30/Empress_Phoenix.png") },
-      { id: "col_2", hero: "Benedetta", name: "Death Oath", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/0/07/Death_Oath.png") },
-      { id: "col_3", hero: "Yu Zhong", name: "Blood Serpent", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/f/f3/Blood_Serpent.png") },
-      { id: "col_4", hero: "Ling", name: "Serene Plume", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/9/9e/Serene_Plume.png") },
-      { id: "col_5", hero: "Granger", name: "Agent Z", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/1/10/Agent_Z.png") },
-      { id: "col_6", hero: "Nana", name: "Aqua Pura", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/6/69/Aqua_Pura.png") },
-      { id: "col_7", hero: "Aldous", name: "Realm Watcher", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/6/66/Realm_Watcher.png") },
-      { id: "col_8", hero: "Angela", name: "Floral Elf", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/b/be/Floral_Elf.png") },
+      { id: "col_1", hero: "Nana", name: "Aqua Pura", tier: "Collector", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_08d0332be76ff7bdd894f7c7227be56c.png" },
+      { id: "col_2", hero: "Alice", name: "Wizardly Teacher", tier: "Collector", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_7f0da9c3ddefff4530e8dbe17054c45e.png" },
+      { id: "col_3", hero: "Karina", name: "Doom Duelist", tier: "Collector", img: "https://akmweb.youngjoygame.com/web/madmin/image/1691dbbde8237768590768a90510d5a6.jpg?w=100-100-f7fcc4" },
+      { id: "col_4", hero: "Clint", name: "Collector", tier: "Collector", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_324e2b04393700944b2b54f2f6c939b5.jpg" },
+      { id: "col_5", hero: "Sun", name: "Simian Curse", tier: "Collector", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_802a9c5f922e63054fcf11aa7d012482.png" },
+      { id: "col_6", hero: "Balmond", name: "God of Mountains", tier: "Collector", img: "https://indoch.s3.ml.moonlian.com/web/madmin/image_be884c14d560f6bc5827e2a663439f94.png" },
 
       // S.T.U.N.
-      { id: "stun_1", hero: "Chou", name: "S.T.U.N. Chou", tier: "S.T.U.N.", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/3/3c/S.T.U.N._Chou.png") },
-      { id: "stun_2", hero: "Brody", name: "S.T.U.N. Brody", tier: "S.T.U.N.", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/c/c9/S.T.U.N._Brody.png") },
-      { id: "stun_3", hero: "Selena", name: "S.T.U.N. Selena", tier: "S.T.U.N.", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/f/f7/S.T.U.N._Selena.png") },
+      { id: "stun_1", hero: "Tigreal", name: "Lightborn", tier: "S.T.U.N.", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_23a7a603ff9d20074777d52e2eb202f3.jpg" },
+      { id: "stun_2", hero: "Akai", name: "Imperial Assassin", tier: "S.T.U.N.", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_5f694a5e98b116d1cbb143c8e766019b.png" },
+      { id: "stun_3", hero: "Bane", name: "Castle Guard", tier: "S.T.U.N.", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_f7cf408af54d00ef4db1f3afb064b747.png" },
 
       // EPIC
-      { id: "epic_1", hero: "Hayabusa", name: "Shadow of Obscurity", tier: "Epic", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/6/6e/Shadow_of_Obscurity.png") },
-      { id: "epic_2", hero: "Kagura", name: "Soryu Maiden", tier: "Epic", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/e/e0/Soryu_Maiden.png") },
-      { id: "epic_3", hero: "Lancelot", name: "Royal Matador", tier: "Epic", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/c/c5/Royal_Matador.png") },
-      { id: "epic_4", hero: "Estes", name: "Rattan Dragon", tier: "Epic", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/f/fc/Rattan_Dragon.png") },
-      { id: "epic_5", hero: "Kimmy", name: "Frost Wing", tier: "Epic", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/3/31/Frost_Wing.png") }
+      { id: "epic_1", hero: "Rafaela", name: "Flower Fairy", tier: "Epic", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_549ab8159821398b48e7e79ceb298396.png" },
+      { id: "epic_2", hero: "Moskov", name: "Blood Spear", tier: "Epic", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_1ec30f6756a980ef6567f304484efb64.png" },
+      { id: "epic_3", hero: "Johnson", name: "Wreck King", tier: "Epic", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_bb588518788b5eefec870813bfdb8944.png" },
+      { id: "epic_4", hero: "Cyclops", name: "S.A.B.E.R.", tier: "Epic", img: "https://akmwebstatic.yuanzhanapp.com/web/madmin/image_cef4d89fd02965d3aae272c30990dbe8.png" }
     ];
 
     const TIERS = ["Legend", "Collector", "S.T.U.N.", "Epic"];
@@ -203,7 +195,7 @@
 
         card.innerHTML = `
           <div class="w-full aspect-square rounded-lg bg-slate-900 overflow-hidden relative mb-1 border border-slate-800">
-            <img src="${skin.img}" crossorigin="anonymous" class="w-full h-full object-cover transition duration-300 group-hover:scale-105" alt="${skin.hero}">
+            <img src="${skin.img}" crossorigin="anonymous" class="w-full h-full object-cover transition duration-300 group-hover:scale-105" alt="${skin.hero}" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\'><rect width=\'100\' height=\'100\' fill=\'%23141b2d\'/><text x=\'50%\' y=\'55%\' font-size=\'32\' font-weight=\'bold\' fill=\'%23a855f7\' text-anchor=\'middle\' font-family=\'sans-serif\'>${skin.hero[0]}</text></svg>';">
             ${isSelected ? '<div class="absolute top-1 right-1 bg-purple-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] shadow"><i class="fa-solid fa-check"></i></div>' : ''}
           </div>
           <span class="text-[11px] font-extrabold text-white truncate w-full text-center leading-tight">${skin.hero}</span>
@@ -292,6 +284,17 @@
           img.onload = () => {
             imageCache[skin.id] = img;
             drawCollage(cols, rows);
+          };
+          img.onerror = () => {
+            // Draw gradient initial fallback if network is offline
+            ctx.fillStyle = "#1e293b";
+            ctx.beginPath();
+            ctx.roundRect(x, y, tileSize, tileSize, 12);
+            ctx.fill();
+            ctx.fillStyle = "#a855f7";
+            ctx.font = "bold 36px sans-serif";
+            ctx.textAlign = "center";
+            ctx.fillText(skin.hero[0], x + (tileSize / 2), y + (tileSize / 2) + 12);
           };
           imageCache[skin.id] = null;
         }
