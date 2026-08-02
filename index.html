@@ -49,21 +49,21 @@
   </main>
 
   <!-- CONTROL DRAWER -->
-  <div id="control-drawer" class="fixed bottom-14 inset-x-0 bg-[#0d121f] border-t border-slate-800 p-3 max-w-md mx-auto rounded-t-2xl shadow-2xl max-h-96 overflow-y-auto">
+  <div id="control-drawer" class="fixed bottom-14 inset-x-0 bg-[#0d121f] border-t border-slate-800 p-3 max-w-md mx-auto rounded-t-2xl shadow-2xl max-h-96 overflow-y-auto transition-all">
     
     <!-- TAB 1: SKINS SELECTOR -->
     <div id="tab-skins" class="space-y-3">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold text-white">Skin Library</span>
-          <span id="library-count-badge" class="bg-purple-900/40 text-purple-300 text-[10px] px-2 py-0.5 rounded-full border border-purple-500/30">Loading Fandom Wiki...</span>
+          <span id="library-count-badge" class="bg-purple-900/40 text-purple-300 text-[10px] px-2 py-0.5 rounded-full border border-purple-500/30">Loading database...</span>
         </div>
         <button id="clear-all-btn" class="text-[11px] text-red-400 hover:text-red-300 font-semibold"><i class="fa-solid fa-xmark mr-1"></i>Clear</button>
       </div>
 
       <div class="relative">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
-        <input type="text" id="skin-search-input" placeholder="Search hero or skin name (e.g. Chou, Fanny, Legend)..." class="w-full bg-[#151b2a] border border-slate-700/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500">
+        <input type="text" id="skin-search-input" placeholder="Search hero or skin name (e.g. Chou, Lunar Fest, ALLSTAR)..." class="w-full bg-[#151b2a] border border-slate-700/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500">
       </div>
       
       <div id="categories-container" class="space-y-4 pt-1">
@@ -169,41 +169,53 @@
     let columns = 4;
     let rows = 4;
 
+    // Drawer state tracking
+    let currentActiveTab = 'tab-skins';
+    let isDrawerOpen = true;
+
     const gridEl = document.getElementById('skins-grid');
     const categoriesContainer = document.getElementById('categories-container');
+    const drawerEl = document.getElementById('control-drawer');
 
-    // Proxy helper for Fandom Wiki images to prevent hotlink/CORS blocks
     function getProxiedImage(url) {
       if (!url) return 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=150&auto=format&fit=crop&q=80';
       return `https://images.weserv.nl/?url=${encodeURIComponent(url)}&w=250&output=jpg`;
     }
 
-    // Dynamic Fandom Wiki MediaWiki API query targeting Category:Skins
+    const builtIn2026Skins = [
+      { id: "e1", hero: "Chou", skin: "Lunar Fest - Fortune Dragon", rarity: "Lunar Fest", img: "https://images.weserv.nl/?url=https://static.wikia.nocookie.net/mobile-legends/images/9/90/Dragon_Boy.jpg" },
+      { id: "e2", hero: "Melissa", skin: "ALLSTAR Sparkle", rarity: "ALLSTAR", img: "https://images.weserv.nl/?url=https://static.wikia.nocookie.net/mobile-legends/images/8/87/Pixel_Blast.jpg" },
+      { id: "e3", hero: "Esmeralda", skin: "Lunar Fest - Astral Maiden", rarity: "Lunar Fest", img: "https://images.weserv.nl/?url=https://static.wikia.nocookie.net/mobile-legends/images/3/36/Psion_of_Tomorrow.jpg" },
+      { id: "e4", hero: "Estes", skin: "ALLSTAR Rhythm", rarity: "ALLSTAR", img: "https://images.weserv.nl/?url=https://static.wikia.nocookie.net/mobile-legends/images/4/4b/Conqueror.jpg" },
+      { id: "e5", hero: "Alpha", skin: "Revenant", rarity: "Legend", img: "https://images.weserv.nl/?url=https://static.wikia.nocookie.net/mobile-legends/images/c/c3/Revenant.jpg" },
+      { id: "e6", hero: "Alucard", skin: "Obsidian Blade", rarity: "Legend", img: "https://images.weserv.nl/?url=https://static.wikia.nocookie.net/mobile-legends/images/0/07/Obsidian_Blade.jpg" },
+      { id: "e7", hero: "Fanny", skin: "Skylark", rarity: "Legend", img: "https://images.weserv.nl/?url=https://static.wikia.nocookie.net/mobile-legends/images/2/22/Skylark.jpg" },
+      { id: "e8", hero: "Franco", skin: "King of Hell", rarity: "Legend", img: "https://images.weserv.nl/?url=https://static.wikia.nocookie.net/mobile-legends/images/9/91/King_of_Hell.jpg" }
+    ];
+
     async function loadFandomWikiSkins() {
       const badge = document.getElementById('library-count-badge');
-      badge.textContent = "Connecting to Fandom API...";
+      badge.textContent = "Loading catalog...";
 
       try {
-        let pages = [];
-        let cmcontinue = '';
-
-        // Fetch up to 500 skin pages from Fandom API
-        const wikiApiUrl = `https://mobile-legends.fandom.com/api.php?action=query&list=categorymembers&cmtitle=Category:Skins&cmlimit=500&format=json&origin=*`;
+        const catTarget = "Category:Hero_skins";
+        const wikiApiUrl = `https://mobile-legends.fandom.com/api.php?action=query&list=categorymembers&cmtitle=${catTarget}&cmlimit=500&cmtype=page&format=json&origin=*`;
+        
         const res = await fetch(wikiApiUrl);
         const data = await res.json();
+        let pages = [];
 
         if (data.query && data.query.categorymembers) {
           pages = data.query.categorymembers.filter(p => p.ns === 0);
         }
 
-        // Fetch thumbnail images for pages in chunks of 50
         const pageIds = pages.map(p => p.pageid);
         const chunkedIds = [];
         for (let i = 0; i < pageIds.length; i += 50) {
           chunkedIds.push(pageIds.slice(i, i + 50));
         }
 
-        let fetchedSkins = [];
+        let fetchedSkins = [...builtIn2026Skins];
 
         for (const ids of chunkedIds) {
           const imgApiUrl = `https://mobile-legends.fandom.com/api.php?action=query&pageids=${ids.join('|')}&prop=pageimages&pithumbsize=250&format=json&origin=*`;
@@ -222,7 +234,6 @@
               else if (fullTitle.includes("Collector")) rarity = "Collector";
               else if (fullTitle.includes("Epic")) rarity = "Epic";
               else if (fullTitle.includes("Special")) rarity = "Special";
-              else if (fullTitle.includes("Elite")) rarity = "Elite";
 
               const imgUrl = page.thumbnail ? page.thumbnail.source : null;
 
@@ -241,25 +252,25 @@
 
         fullSkinCatalog = fetchedSkins;
 
-        // Group into categories
-        const catMap = {};
-        fullSkinCatalog.forEach(skin => {
-          const cat = skin.rarity.includes("Legend") ? "Legend Skins" : 
-                     skin.rarity.includes("Collector") ? "Collector Skins" : 
-                     skin.rarity.includes("Epic") ? "Epic Skins" : "All MLBB Skins";
-          if (!catMap[cat]) catMap[cat] = [];
-          catMap[cat].push(skin);
-        });
-
-        skinCategories = Object.keys(catMap).map(c => ({ category: c, skins: catMap[c] }));
-        selectedSkins = fullSkinCatalog.slice(0, 16);
-        renderCategoryLibrary();
-        renderGrid();
-
       } catch (err) {
-        console.error("Fandom API error:", err);
-        badge.textContent = "Fandom API Offline";
+        console.error("Fandom API failed, loading built-in catalog:", err);
+        fullSkinCatalog = builtIn2026Skins;
       }
+
+      const catMap = {};
+      fullSkinCatalog.forEach(skin => {
+        const cat = skin.rarity.includes("ALLSTAR") ? "2026 ALLSTAR Skins" :
+                   skin.rarity.includes("Lunar") ? "2026 Lunar Fest Skins" :
+                   skin.rarity.includes("Legend") ? "Legend Skins" : 
+                   skin.rarity.includes("Collector") ? "Collector Skins" : "All MLBB Skins";
+        if (!catMap[cat]) catMap[cat] = [];
+        catMap[cat].push(skin);
+      });
+
+      skinCategories = Object.keys(catMap).map(c => ({ category: c, skins: catMap[c] }));
+      selectedSkins = fullSkinCatalog.slice(0, 16);
+      renderCategoryLibrary();
+      renderGrid();
     }
 
     function renderCategoryLibrary() {
@@ -390,12 +401,31 @@
     document.getElementById('cols-input').addEventListener('input', (e) => { columns = parseInt(e.target.value) || 1; renderGrid(); });
     document.getElementById('rows-input').addEventListener('input', (e) => { rows = parseInt(e.target.value) || 1; renderGrid(); });
 
+    // TOGGLE DRAWER ON NAV BUTTON CLICK
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-purple-400', 'text-slate-400'));
-        btn.classList.replace('text-slate-400', 'text-purple-400');
-        document.querySelectorAll('#control-drawer > div').forEach(div => div.classList.add('hidden'));
-        document.getElementById(btn.dataset.tab).classList.remove('hidden');
+        const targetTab = btn.dataset.tab;
+
+        if (currentActiveTab === targetTab && isDrawerOpen) {
+          // If tapping the already-active tab while open, CLOSE the drawer
+          drawerEl.classList.add('hidden');
+          isDrawerOpen = false;
+          btn.classList.replace('text-purple-400', 'text-slate-400');
+        } else {
+          // OPEN the drawer and switch to clicked tab
+          drawerEl.classList.remove('hidden');
+          isDrawerOpen = true;
+
+          // Highlight current active button
+          document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-purple-400', 'text-slate-400'));
+          btn.classList.replace('text-slate-400', 'text-purple-400');
+
+          // Switch active tab view inside drawer
+          document.querySelectorAll('#control-drawer > div').forEach(div => div.classList.add('hidden'));
+          document.getElementById(targetTab).classList.remove('hidden');
+
+          currentActiveTab = targetTab;
+        }
       });
     });
 
