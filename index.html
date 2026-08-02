@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MLBB Complete Skin Showcase - Portrait Edition</title>
+  <title>MLBB Skin Collage Tool - Real Assets Edition</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -11,328 +11,324 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-[#090d16] text-slate-200 min-h-screen flex flex-col font-sans select-none pb-28">
+<body class="bg-[#090d16] text-slate-200 min-h-screen flex flex-col font-sans select-none pb-24">
 
-  <!-- HEADER -->
+  <!-- TOP NAV -->
   <header class="p-3 border-b border-slate-800 bg-[#0d121f] flex items-center justify-between sticky top-0 z-50">
     <div class="flex items-center gap-2">
-      <i class="fa-solid fa-crown text-purple-400"></i>
-      <h1 class="font-extrabold text-white text-sm">MLBB <span class="text-purple-400">Skin Portraits Tool</span></h1>
+      <div class="w-7 h-7 rounded-lg bg-purple-600 flex items-center justify-center text-white font-black text-xs shadow-lg shadow-purple-500/30">M</div>
+      <h1 class="font-extrabold text-white text-sm tracking-wide">MLBB <span class="text-purple-400">Collage</span></h1>
     </div>
-    <button onclick="executeCanvasDownload()" class="px-3 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-lg shadow transition flex items-center gap-1.5">
-      <i class="fa-solid fa-download"></i> Export Image
+    <button onclick="exportCollage()" class="px-3.5 py-1.5 bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs rounded-lg shadow-lg shadow-purple-600/30 transition flex items-center gap-1.5">
+      <i class="fa-solid fa-download"></i> Export PNG
     </button>
   </header>
 
-  <!-- MAIN CANVAS VIEW -->
-  <main class="p-4 flex flex-col items-center justify-center">
-    <div class="w-full max-w-sm bg-[#0e1320] border border-slate-800 rounded-xl p-3 shadow-2xl flex flex-col gap-3">
-      
-      <!-- PROFILE SCREENSHOT UPLOAD -->
-      <div class="w-full h-32 bg-[#141b2d] rounded-lg border border-slate-700 relative overflow-hidden flex items-center justify-center">
-        <label id="upload-label" class="w-full h-full flex flex-col items-center justify-center cursor-pointer p-2">
-          <i class="fa-solid fa-cloud-arrow-up text-purple-400 text-xl mb-1"></i>
-          <span class="text-xs font-semibold text-slate-300">Upload Profile Screenshot</span>
-          <span class="text-[10px] text-slate-500">Optional header image</span>
-          <input type="file" id="user-screenshot-input" accept="image/*" class="hidden">
-        </label>
-        <img id="screenshot-preview" class="w-full h-full object-cover hidden" alt="Profile">
-        <button id="delete-screenshot-btn" onclick="clearScreenshot()" class="hidden absolute top-2 right-2 bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs shadow"><i class="fa-solid fa-xmark"></i></button>
-      </div>
+  <!-- MAIN WORKSPACE -->
+  <main class="p-4 flex-1 flex flex-col items-center justify-start max-w-lg mx-auto w-full gap-4">
+    
+    <!-- ACCOUNT SCREENSHOT UPLOAD BAR -->
+    <div class="w-full bg-[#111726] border border-slate-800 rounded-2xl p-3 flex items-center justify-between gap-3 shadow-md">
+      <label class="flex items-center gap-3 cursor-pointer flex-1">
+        <div class="w-10 h-10 rounded-xl bg-purple-900/40 border border-purple-500/30 flex items-center justify-center text-purple-400">
+          <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
+        </div>
+        <div class="flex flex-col">
+          <span class="text-xs font-bold text-white">Upload Account Screenshot</span>
+          <span class="text-[10px] text-slate-400">PNG, JPG header overlay (Optional)</span>
+        </div>
+        <input type="file" id="header-input" accept="image/*" class="hidden">
+      </label>
+      <button id="clear-header-btn" onclick="clearHeaderImage()" class="hidden text-xs text-red-400 hover:text-red-300 font-semibold px-2 py-1">Remove</button>
+    </div>
 
-      <!-- CANVAS -->
-      <div class="w-full flex justify-center overflow-auto">
-        <canvas id="main-canvas" class="border border-slate-800 rounded-lg bg-[#090d16] max-w-full"></canvas>
+    <!-- CANVAS DISPLAY CONTAINER -->
+    <div class="w-full bg-[#0e1320] border border-slate-800/80 rounded-2xl p-3 shadow-2xl flex flex-col items-center justify-center min-h-[220px] overflow-hidden">
+      <canvas id="collage-canvas" class="max-w-full h-auto rounded-lg shadow-lg"></canvas>
+    </div>
+
+    <!-- GRID LAYOUT CONTROLS -->
+    <div class="w-full bg-[#111726] border border-slate-800 rounded-xl p-3 flex items-center justify-between gap-2 text-xs">
+      <div class="flex items-center gap-2">
+        <span class="text-slate-400 font-medium">Grid:</span>
+        <span id="grid-size-label" class="font-bold text-white">4 x 4</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <label class="text-slate-400">Cols:</label>
+        <select id="col-select" onchange="updateLayout()" class="bg-[#0d121f] border border-slate-700 rounded px-2 py-1 text-white font-bold focus:outline-none focus:border-purple-500">
+          <option value="3">3</option>
+          <option value="4" selected>4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
+        <label class="text-slate-400 ml-1">Rows:</label>
+        <select id="row-select" onchange="updateLayout()" class="bg-[#0d121f] border border-slate-700 rounded px-2 py-1 text-white font-bold focus:outline-none focus:border-purple-500">
+          <option value="3">3</option>
+          <option value="4" selected>4</option>
+          <option value="5">5</option>
+          <option value="6">6</option>
+        </select>
       </div>
     </div>
+
+    <!-- SKIN SELECTOR & TIER LIBRARY -->
+    <div class="w-full bg-[#111726] border border-slate-800 rounded-2xl p-4 flex flex-col gap-3 shadow-md">
+      
+      <!-- HEADER & COUNTER -->
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <h2 class="text-xs font-extrabold text-white uppercase tracking-wider">Skin Library</h2>
+          <span id="selection-counter" class="bg-purple-900/60 text-purple-300 border border-purple-500/30 text-[10px] px-2 py-0.5 rounded-full font-bold">0 Selected</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <button onclick="selectAllInTier()" class="text-[11px] text-purple-400 hover:text-purple-300 font-bold">Select Tier</button>
+          <button onclick="clearAllSkins()" class="text-[11px] text-red-400 hover:text-red-300 font-bold">Clear All</button>
+        </div>
+      </div>
+
+      <!-- TIER TABS -->
+      <div id="tier-tabs" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 border-b border-slate-800"></div>
+
+      <!-- SEARCH BAR -->
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+        <input type="text" id="search-input" oninput="renderSkinGrid()" placeholder="Search by hero or skin name..." class="w-full bg-[#0d121f] border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-purple-500">
+      </div>
+
+      <!-- SKINS GRID -->
+      <div id="skin-grid" class="grid grid-cols-4 gap-2.5 max-h-72 overflow-y-auto p-1 no-scrollbar"></div>
+    </div>
+
   </main>
 
-  <!-- SKIN SELECTOR DRAWER -->
-  <section class="max-w-md mx-auto w-full px-4 mt-2 flex-1 flex flex-col gap-2">
-    <div class="flex justify-between items-center bg-[#0d121f] p-2.5 rounded-xl border border-slate-800">
-      <div class="flex items-center gap-2">
-        <span class="text-xs font-bold text-white">Select Skins</span>
-        <span id="counter-badge" class="bg-purple-900/50 text-purple-300 text-[10px] px-2 py-0.5 rounded-full border border-purple-500/30">0 Selected</span>
-      </div>
-      <div class="flex gap-2">
-        <button onclick="selectAllSkins()" class="text-[10px] text-purple-400 font-semibold hover:underline">Select Filtered</button>
-        <button onclick="clearSkins()" class="text-[10px] text-red-400 font-semibold hover:underline">Clear All</button>
-      </div>
-    </div>
-
-    <!-- SEARCH -->
-    <div class="relative">
-      <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-500 text-xs"></i>
-      <input type="text" id="search-box" oninput="renderLibrary()" placeholder="Search by hero or skin name..." class="w-full bg-[#0d121f] border border-slate-800 rounded-xl pl-8 pr-3 py-2 text-xs text-white focus:outline-none focus:border-purple-500">
-    </div>
-
-    <!-- GRID LIBRARY -->
-    <div id="skin-grid" class="grid grid-cols-3 gap-2.5 max-h-80 overflow-y-auto p-1.5 bg-[#0d121f]/50 rounded-xl border border-slate-800"></div>
-  </section>
-
   <script>
-    const HERO_DATABASE = [
-      { name: "Miya", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/miya.png" },
-      { name: "Balmond", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/balmond.png" },
-      { name: "Saber", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/saber.png" },
-      { name: "Alice", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/alice.png" },
-      { name: "Nana", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/nana.png" },
-      { name: "Tigreal", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/tigreal.png" },
-      { name: "Alucard", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/alucard.png" },
-      { name: "Karina", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/karina.png" },
-      { name: "Akai", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/akai.png" },
-      { name: "Franco", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/franco.png" },
-      { name: "Bane", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/bane.png" },
-      { name: "Bruno", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/bruno.png" },
-      { name: "Clint", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/clint.png" },
-      { name: "Hayabusa", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/hayabusa.png" },
-      { name: "Rafaela", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/rafaela.png" },
-      { name: "Eudora", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/eudora.png" },
-      { name: "Zilong", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/zilong.png" },
-      { name: "Fanny", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/fanny.png" },
-      { name: "Layla", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/layla.png" },
-      { name: "Minotaur", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/minotaur.png" },
-      { name: "Lolita", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/lolita.png" },
-      { name: "Hayabusa", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/hayabusa.png" },
-      { name: "Freya", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/freya.png" },
-      { name: "Gusion", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/gusion.png" },
-      { name: "Lesley", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/lesley.png" },
-      { name: "Ling", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/ling.png" },
-      { name: "Guinevere", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/guinevere.png" },
-      { name: "Chou", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/chou.png" },
-      { name: "Kagura", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/kagura.png" },
-      { name: "Aldous", img: "https://raw.githubusercontent.com/MLBB-Tools/assets/main/heroes/aldous.png" }
+    // CORS-safe proxy wrapper to guarantee external artwork loads and exports cleanly
+    const proxy = (url) => `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=200&h=200&fit=cover&output=webp`;
+
+    // Authentic MLBB Artwork Catalog grouped by Tiers
+    const SKIN_DATABASE = [
+      // LEGEND
+      { id: "leg_1", hero: "Miya", name: "Modena Butterfly", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/1/14/Modena_Butterfly.png") },
+      { id: "leg_2", hero: "Gord", name: "Conqueror", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/4/41/Conqueror.png") },
+      { id: "leg_3", hero: "Alucard", name: "Obsidian Blade", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/b/b3/Obsidian_Blade.png") },
+      { id: "leg_4", hero: "Lesley", name: "Angelic Agent", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/9/91/Angelic_Agent.png") },
+      { id: "leg_5", hero: "Gusion", name: "Cosmic Gleam", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/e/e0/Cosmic_Gleam.png") },
+      { id: "leg_6", hero: "Valir", name: "Infernal Blaze", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/8/87/Infernal_Blaze.png") },
+      { id: "leg_7", hero: "Franco", name: "King of Hell", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/a/a2/King_of_Hell.png") },
+      { id: "leg_8", hero: "Freya", name: "Galactic Vanquisher", tier: "Legend", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/d/df/Galactic_Vanquisher.png") },
+      
+      // COLLECTOR
+      { id: "col_1", hero: "Pharsa", name: "Empress Phoenix", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/3/30/Empress_Phoenix.png") },
+      { id: "col_2", hero: "Benedetta", name: "Death Oath", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/0/07/Death_Oath.png") },
+      { id: "col_3", hero: "Yu Zhong", name: "Blood Serpent", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/f/f3/Blood_Serpent.png") },
+      { id: "col_4", hero: "Ling", name: "Serene Plume", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/9/9e/Serene_Plume.png") },
+      { id: "col_5", hero: "Granger", name: "Agent Z", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/1/10/Agent_Z.png") },
+      { id: "col_6", hero: "Nana", name: "Aqua Pura", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/6/69/Aqua_Pura.png") },
+      { id: "col_7", hero: "Aldous", name: "Realm Watcher", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/6/66/Realm_Watcher.png") },
+      { id: "col_8", hero: "Angela", name: "Floral Elf", tier: "Collector", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/b/be/Floral_Elf.png") },
+
+      // S.T.U.N.
+      { id: "stun_1", hero: "Chou", name: "S.T.U.N. Chou", tier: "S.T.U.N.", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/3/3c/S.T.U.N._Chou.png") },
+      { id: "stun_2", hero: "Brody", name: "S.T.U.N. Brody", tier: "S.T.U.N.", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/c/c9/S.T.U.N._Brody.png") },
+      { id: "stun_3", hero: "Selena", name: "S.T.U.N. Selena", tier: "S.T.U.N.", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/f/f7/S.T.U.N._Selena.png") },
+
+      // EPIC
+      { id: "epic_1", hero: "Hayabusa", name: "Shadow of Obscurity", tier: "Epic", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/6/6e/Shadow_of_Obscurity.png") },
+      { id: "epic_2", hero: "Kagura", name: "Soryu Maiden", tier: "Epic", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/e/e0/Soryu_Maiden.png") },
+      { id: "epic_3", hero: "Lancelot", name: "Royal Matador", tier: "Epic", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/c/c5/Royal_Matador.png") },
+      { id: "epic_4", hero: "Estes", name: "Rattan Dragon", tier: "Epic", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/f/fc/Rattan_Dragon.png") },
+      { id: "epic_5", hero: "Kimmy", name: "Frost Wing", tier: "Epic", img: proxy("https://static.wikia.nocookie.net/mobile-legends/images/3/31/Frost_Wing.png") }
     ];
 
-    const TIERS = [
-      { name: "Legend", pts: 3000, color: "#ea580c" },
-      { name: "Collector", pts: 3000, color: "#d97706" },
-      { name: "Epic", pts: 2000, color: "#db2777" },
-      { name: "Starlight", pts: 1000, color: "#2563eb" },
-      { name: "Special", pts: 500, color: "#059669" },
-      { name: "Elite", pts: 200, color: "#b45309" },
-      { name: "Basic", pts: 100, color: "#475569" }
-    ];
-
-    let allSkins = [];
-    let selectedIds = new Set();
+    const TIERS = ["Legend", "Collector", "S.T.U.N.", "Epic"];
+    let currentTier = "Legend";
+    let selectedIds = new Set(["leg_1", "leg_2", "leg_3", "leg_4", "col_1", "col_2", "col_3", "col_4"]);
     let imageCache = {};
-    let profileImage = null;
+    let headerImage = null;
 
-    // Generates fallback portrait data URI if external artwork fails to load
-    function generatePortraitCanvas(name, tier, accentColor) {
-      const cvs = document.createElement('canvas');
-      cvs.width = 160;
-      cvs.height = 160;
-      const c = cvs.getContext('2d');
-
-      const grad = c.createLinearGradient(0, 0, 160, 160);
-      grad.addColorStop(0, '#0f172a');
-      grad.addColorStop(0.5, accentColor);
-      grad.addColorStop(1, '#020617');
-      c.fillStyle = grad;
-      c.fillRect(0, 0, 160, 160);
-
-      c.fillStyle = 'rgba(255, 255, 255, 0.15)';
-      c.beginPath();
-      c.arc(80, 65, 35, 0, Math.PI * 2);
-      c.fill();
-
-      c.beginPath();
-      c.ellipse(80, 130, 50, 30, 0, 0, Math.PI * 2);
-      c.fill();
-
-      c.fillStyle = '#ffffff';
-      c.font = 'bold 16px sans-serif';
-      c.textAlign = 'center';
-      c.fillText(name, 80, 70);
-
-      c.fillStyle = '#cbd5e1';
-      c.font = '11px sans-serif';
-      c.fillText(tier, 80, 95);
-
-      return cvs.toDataURL('image/jpeg', 0.9);
+    // Render Tier Navigation Tabs
+    function renderTierTabs() {
+      const container = document.getElementById('tier-tabs');
+      container.innerHTML = '';
+      TIERS.forEach(tier => {
+        const btn = document.createElement('button');
+        const active = currentTier === tier;
+        btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition ${
+          active 
+            ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30' 
+            : 'bg-[#141b2d] text-slate-400 hover:text-white border border-slate-800'
+        }`;
+        btn.textContent = tier;
+        btn.onclick = () => {
+          currentTier = tier;
+          renderTierTabs();
+          renderSkinGrid();
+        };
+        container.appendChild(btn);
+      });
     }
 
-    // Initialize 1,133 skins with portrait references
-    function initDatabase() {
-      let id = 1;
-      while (allSkins.length < 1133) {
-        for (let i = 0; i < HERO_DATABASE.length; i++) {
-          if (allSkins.length >= 1133) break;
-          const hero = HERO_DATABASE[i];
-          const tier = TIERS[(allSkins.length + i) % TIERS.length];
-          const v = Math.floor(allSkins.length / HERO_DATABASE.length) + 1;
-          const skinName = v === 1 ? tier.name : `${tier.name} V${v}`;
-          
-          allSkins.push({
-            id: id++,
-            hero: hero.name,
-            skinName: skinName,
-            pts: tier.pts,
-            color: tier.color,
-            imgUrl: hero.img,
-            fallbackImg: generatePortraitCanvas(hero.name, skinName, tier.color)
-          });
-        }
-      }
-
-      // Default select the first 12 skins
-      for (let i = 0; i < 12; i++) selectedIds.add(allSkins[i].id);
-      renderLibrary();
-      redrawCanvas();
-    }
-
-    function renderLibrary() {
+    // Render Skin Library Grid
+    function renderSkinGrid() {
       const grid = document.getElementById('skin-grid');
-      const query = document.getElementById('search-box').value.toLowerCase();
+      const query = document.getElementById('search-input').value.toLowerCase();
       grid.innerHTML = '';
 
-      const filtered = allSkins.filter(s => 
-        s.hero.toLowerCase().includes(query) || s.skinName.toLowerCase().includes(query)
-      );
+      const filtered = SKIN_DATABASE.filter(skin => {
+        const matchesTier = skin.tier === currentTier;
+        const matchesQuery = skin.hero.toLowerCase().includes(query) || skin.name.toLowerCase().includes(query);
+        return query ? matchesQuery : matchesTier;
+      });
 
-      filtered.slice(0, 120).forEach(skin => {
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="col-span-4 py-8 text-center text-xs text-slate-500 font-medium">No skins found</div>`;
+        return;
+      }
+
+      filtered.forEach(skin => {
         const isSelected = selectedIds.has(skin.id);
         const card = document.createElement('div');
-        card.className = `flex flex-col items-center p-2 rounded-xl cursor-pointer border transition ${
-          isSelected ? 'bg-purple-950/50 border-purple-500 shadow-md' : 'bg-[#141b2d] border-slate-800 hover:border-slate-700'
+        card.className = `group flex flex-col items-center p-1.5 rounded-xl cursor-pointer border transition relative overflow-hidden ${
+          isSelected 
+            ? 'bg-purple-950/40 border-purple-500 shadow-md' 
+            : 'bg-[#141b2d] border-slate-800/80 hover:border-slate-700'
         }`;
+        
         card.onclick = () => {
           if (isSelected) selectedIds.delete(skin.id);
           else selectedIds.add(skin.id);
-          renderLibrary();
-          redrawCanvas();
+          renderSkinGrid();
+          updateLayout();
         };
 
         card.innerHTML = `
-          <div class="w-16 h-16 rounded-lg bg-slate-900 border border-slate-700 overflow-hidden relative mb-1" style="border-top: 3px solid ${skin.color}">
-            <img src="${skin.imgUrl}" onerror="this.onerror=null; this.src='${skin.fallbackImg}'" crossorigin="anonymous" class="w-full h-full object-cover" alt="${skin.hero}">
-            ${isSelected ? '<div class="absolute top-1 right-1 bg-purple-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px]">✓</div>' : ''}
+          <div class="w-full aspect-square rounded-lg bg-slate-900 overflow-hidden relative mb-1 border border-slate-800">
+            <img src="${skin.img}" crossorigin="anonymous" class="w-full h-full object-cover transition duration-300 group-hover:scale-105" alt="${skin.hero}">
+            ${isSelected ? '<div class="absolute top-1 right-1 bg-purple-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[9px] shadow"><i class="fa-solid fa-check"></i></div>' : ''}
           </div>
-          <span class="text-[10px] font-bold text-white truncate w-full text-center">${skin.hero}</span>
-          <span class="text-[9px] text-purple-300 font-semibold">${skin.pts} Pts</span>
+          <span class="text-[11px] font-extrabold text-white truncate w-full text-center leading-tight">${skin.hero}</span>
+          <span class="text-[9px] text-slate-400 truncate w-full text-center leading-tight">${skin.name}</span>
         `;
         grid.appendChild(card);
       });
 
-      document.getElementById('counter-badge').textContent = `${selectedIds.size} Selected`;
+      document.getElementById('selection-counter').textContent = `${selectedIds.size} Selected`;
     }
 
-    function selectAllSkins() {
-      const query = document.getElementById('search-box').value.toLowerCase();
-      allSkins.filter(s => s.hero.toLowerCase().includes(query) || s.skinName.toLowerCase().includes(query))
-              .forEach(s => selectedIds.add(s.id));
-      renderLibrary();
-      redrawCanvas();
+    function selectAllInTier() {
+      SKIN_DATABASE.filter(s => s.tier === currentTier).forEach(s => selectedIds.add(s.id));
+      renderSkinGrid();
+      updateLayout();
     }
 
-    function clearSkins() {
+    function clearAllSkins() {
       selectedIds.clear();
-      renderLibrary();
-      redrawCanvas();
+      renderSkinGrid();
+      updateLayout();
     }
 
-    const canvas = document.getElementById('main-canvas');
+    // Canvas Layout & Drawing
+    const canvas = document.getElementById('collage-canvas');
     const ctx = canvas.getContext('2d');
 
-    function redrawCanvas() {
-      const tileSize = 90;
-      const gap = 8;
-      const cols = 4;
-      const headerH = profileImage ? 130 : 0;
-      const list = allSkins.filter(s => selectedIds.has(s.id));
+    function updateLayout() {
+      const cols = parseInt(document.getElementById('col-select').value);
+      const rows = parseInt(document.getElementById('row-select').value);
+      document.getElementById('grid-size-label').textContent = `${cols} x ${rows}`;
+      drawCollage(cols, rows);
+    }
 
-      if (list.length === 0) {
-        canvas.width = 360;
-        canvas.height = 150;
-        ctx.fillStyle = "#090d16";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "#64748b";
-        ctx.font = "12px sans-serif";
-        ctx.textAlign = "center";
-        ctx.fillText("Select skins below to generate view", canvas.width / 2, canvas.height / 2);
-        return;
-      }
+    function drawCollage(cols, rows) {
+      const tileSize = 110;
+      const gap = 6;
+      const headerH = headerImage ? 140 : 0;
+      const selectedList = SKIN_DATABASE.filter(s => selectedIds.has(s.id));
 
-      const rows = Math.ceil(list.length / cols);
-      canvas.width = (cols * tileSize) + ((cols + 1) * gap);
-      canvas.height = headerH + (rows * tileSize) + ((rows + 1) * gap);
+      const totalCols = cols;
+      const totalRows = Math.max(rows, Math.ceil(selectedList.length / cols) || 1);
 
+      canvas.width = (totalCols * tileSize) + ((totalCols + 1) * gap);
+      canvas.height = headerH + (totalRows * tileSize) + ((totalRows + 1) * gap);
+
+      // Background
       ctx.fillStyle = "#090d16";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      if (profileImage) {
-        ctx.drawImage(profileImage, gap, gap, canvas.width - (gap * 2), 115);
+      // Draw Account Screenshot Header if uploaded
+      if (headerImage) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(gap, gap, canvas.width - (gap * 2), headerH - gap, 12);
+        ctx.clip();
+        ctx.drawImage(headerImage, gap, gap, canvas.width - (gap * 2), headerH - gap);
+        ctx.restore();
       }
 
-      list.forEach((skin, i) => {
-        const c = i % cols;
-        const r = Math.floor(i / cols);
+      if (selectedList.length === 0) {
+        ctx.fillStyle = "#475569";
+        ctx.font = "bold 13px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText("Select skins from the library below to build your collage", canvas.width / 2, (canvas.height + headerH) / 2);
+        return;
+      }
+
+      selectedList.forEach((skin, idx) => {
+        const c = idx % totalCols;
+        const r = Math.floor(idx / totalCols);
         const x = gap + c * (tileSize + gap);
         const y = headerH + gap + r * (tileSize + gap);
 
-        // Load and cache portrait image
+        // Frame Base
+        ctx.fillStyle = "#141b2d";
+        ctx.beginPath();
+        ctx.roundRect(x, y, tileSize, tileSize, 12);
+        ctx.fill();
+
+        // Load & Draw Portrait
         if (!imageCache[skin.id]) {
           const img = new Image();
           img.crossOrigin = "anonymous";
-          img.src = skin.imgUrl;
+          img.src = skin.img;
           img.onload = () => {
             imageCache[skin.id] = img;
-            redrawCanvas();
-          };
-          img.onerror = () => {
-            const fbImg = new Image();
-            fbImg.src = skin.fallbackImg;
-            fbImg.onload = () => {
-              imageCache[skin.id] = fbImg;
-              redrawCanvas();
-            };
+            drawCollage(cols, rows);
           };
           imageCache[skin.id] = null;
         }
 
-        const cached = imageCache[skin.id];
-
-        // Background Tile Frame
-        ctx.fillStyle = "#141b2d";
-        ctx.beginPath();
-        ctx.roundRect(x, y, tileSize, tileSize, 10);
-        ctx.fill();
-
-        // Draw Portrait Art if Loaded
-        if (cached && cached.complete && cached.naturalWidth !== 0) {
+        const cachedImg = imageCache[skin.id];
+        if (cachedImg && cachedImg.complete && cachedImg.naturalWidth !== 0) {
           ctx.save();
           ctx.beginPath();
-          ctx.roundRect(x, y, tileSize, tileSize, 10);
+          ctx.roundRect(x, y, tileSize, tileSize, 12);
           ctx.clip();
-          ctx.drawImage(cached, x, y, tileSize, tileSize);
+          ctx.drawImage(cachedImg, x, y, tileSize, tileSize);
           ctx.restore();
         }
 
-        // Tier Border Accent
-        ctx.strokeStyle = skin.color;
-        ctx.lineWidth = 2;
+        // Card Border
+        ctx.strokeStyle = "rgba(148, 163, 184, 0.2)";
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.roundRect(x, y, tileSize, tileSize, 10);
+        ctx.roundRect(x, y, tileSize, tileSize, 12);
         ctx.stroke();
 
-        // Points Tag Label at bottom of portrait
-        ctx.fillStyle = "rgba(15, 23, 42, 0.88)";
+        // Hero Name Label Bar
+        ctx.fillStyle = "rgba(9, 13, 22, 0.85)";
         ctx.beginPath();
-        ctx.roundRect(x + 6, y + tileSize - 22, tileSize - 12, 18, 5);
+        ctx.roundRect(x + 6, y + tileSize - 24, tileSize - 12, 18, 6);
         ctx.fill();
-        
+
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 9px sans-serif";
+        ctx.font = "bold 10px sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText(`${skin.pts} Pts`, x + (tileSize / 2), y + tileSize - 9);
+        ctx.fillText(skin.hero, x + (tileSize / 2), y + tileSize - 11);
       });
     }
 
-    // Profile screenshot uploader
-    const uploadInput = document.getElementById('user-screenshot-input');
-    uploadInput.addEventListener('change', (e) => {
+    // Header Screenshot Upload
+    const headerInput = document.getElementById('header-input');
+    headerInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -340,35 +336,34 @@
           const img = new Image();
           img.src = event.target.result;
           img.onload = () => {
-            profileImage = img;
-            document.getElementById('screenshot-preview').src = event.target.result;
-            document.getElementById('screenshot-preview').classList.remove('hidden');
-            document.getElementById('upload-label').classList.add('hidden');
-            document.getElementById('delete-screenshot-btn').classList.remove('hidden');
-            redrawCanvas();
+            headerImage = img;
+            document.getElementById('clear-header-btn').classList.remove('hidden');
+            updateLayout();
           };
         };
         reader.readAsDataURL(file);
       }
     });
 
-    function clearScreenshot() {
-      profileImage = null;
-      uploadInput.value = "";
-      document.getElementById('screenshot-preview').classList.add('hidden');
-      document.getElementById('upload-label').classList.remove('hidden');
-      document.getElementById('delete-screenshot-btn').classList.add('hidden');
-      redrawCanvas();
+    function clearHeaderImage() {
+      headerImage = null;
+      headerInput.value = "";
+      document.getElementById('clear-header-btn').classList.add('hidden');
+      updateLayout();
     }
 
-    function executeCanvasDownload() {
+    // Export PNG
+    function exportCollage() {
       const link = document.createElement('a');
-      link.download = `MLBB_Skin_Portraits_${Date.now()}.png`;
+      link.download = `MLBB_Skin_Collage_${Date.now()}.png`;
       link.href = canvas.toDataURL('image/png', 1.0);
       link.click();
     }
 
-    initDatabase();
+    // Initialize App
+    renderTierTabs();
+    renderSkinGrid();
+    updateLayout();
   </script>
 </body>
 </html>
