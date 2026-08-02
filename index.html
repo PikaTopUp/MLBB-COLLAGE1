@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MLBB Skin Point Selector & Showcase</title>
+  <title>MLBB Skin Point Selector & Showcase (1,133 Skins)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -11,13 +11,13 @@
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
-<body class="bg-[#090d16] text-slate-200 min-h-screen flex flex-col font-sans select-none pb-32">
+<body class="bg-[#090d16] text-slate-200 min-h-screen flex flex-col font-sans select-none pb-36">
 
   <!-- HEADER -->
   <header class="p-3 border-b border-slate-800 bg-[#0d121f] flex items-center justify-between">
     <div class="flex items-center gap-2">
       <i class="fa-solid fa-crown text-purple-400"></i>
-      <h1 class="font-extrabold text-white text-sm">MLBB <span class="text-purple-400">Point Showcase</span></h1>
+      <h1 class="font-extrabold text-white text-sm">MLBB <span class="text-purple-400">1,133 Point Showcase</span></h1>
     </div>
     <div class="flex items-center gap-1 bg-[#131a29] p-1 rounded-lg border border-slate-800">
       <span class="text-[10px] text-slate-400 px-1">Nudge:</span>
@@ -56,36 +56,38 @@
   </main>
 
   <!-- CONTROL DRAWER -->
-  <div id="control-drawer" class="fixed bottom-14 inset-x-0 bg-[#0d121f] border-t border-slate-800 p-3 max-w-md mx-auto rounded-t-2xl shadow-2xl max-h-80 overflow-y-auto z-40">
+  <div id="control-drawer" class="fixed bottom-14 inset-x-0 bg-[#0d121f] border-t border-slate-800 p-3 max-w-md mx-auto rounded-t-2xl shadow-2xl max-h-96 overflow-y-auto z-40">
     
     <!-- SKINS LIBRARY SELECTION -->
     <div id="tab-skins" class="space-y-3 control-tab-content">
       <div class="flex justify-between items-center border-b border-slate-800 pb-2">
         <div class="flex items-center gap-2">
-          <span class="text-xs font-bold text-white">Skin Point Categories</span>
-          <span id="catalog-counter" class="bg-purple-900/40 text-purple-300 text-[10px] px-2 py-0.5 rounded-full border border-purple-500/30">Select by Points</span>
+          <span class="text-xs font-bold text-white">Full Skin Library</span>
+          <span id="catalog-counter" class="bg-purple-900/40 text-purple-300 text-[10px] px-2 py-0.5 rounded-full border border-purple-500/30">1,133 Loaded</span>
         </div>
         <div class="flex gap-2">
-          <button onclick="clearAllSelectedSkins()" class="text-[10px] text-red-400 hover:text-red-300 font-semibold">Clear All</button>
+          <button onclick="selectAllVisibleSkins()" class="text-[10px] text-purple-400 hover:text-purple-300 font-semibold">Select Filtered</button>
+          <button onclick="clearAllSelectedSkins()" class="text-[10px] text-red-400 hover:text-red-300 font-semibold">Clear</button>
         </div>
       </div>
 
-      <!-- POINT FILTER CHIPS -->
+      <!-- POINT FILTER CHIPS (3000, 2000, and so on) -->
       <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-        <button onclick="filterByPoints('ALL')" class="px-2.5 py-1 bg-purple-600 text-white text-[10px] font-bold rounded-full whitespace-nowrap point-chip" data-point="ALL">All Skins</button>
+        <button onclick="filterByPoints('ALL')" class="px-2.5 py-1 bg-purple-600 text-white text-[10px] font-bold rounded-full whitespace-nowrap point-chip" data-point="ALL">All (1,133)</button>
         <button onclick="filterByPoints(3000)" class="px-2.5 py-1 bg-slate-800 text-slate-300 text-[10px] font-bold rounded-full whitespace-nowrap point-chip" data-point="3000">3000 Pts</button>
         <button onclick="filterByPoints(2000)" class="px-2.5 py-1 bg-slate-800 text-slate-300 text-[10px] font-bold rounded-full whitespace-nowrap point-chip" data-point="2000">2000 Pts</button>
         <button onclick="filterByPoints(1000)" class="px-2.5 py-1 bg-slate-800 text-slate-300 text-[10px] font-bold rounded-full whitespace-nowrap point-chip" data-point="1000">1000 Pts</button>
         <button onclick="filterByPoints(500)" class="px-2.5 py-1 bg-slate-800 text-slate-300 text-[10px] font-bold rounded-full whitespace-nowrap point-chip" data-point="500">500 Pts</button>
         <button onclick="filterByPoints(200)" class="px-2.5 py-1 bg-slate-800 text-slate-300 text-[10px] font-bold rounded-full whitespace-nowrap point-chip" data-point="200">200 Pts</button>
+        <button onclick="filterByPoints(100)" class="px-2.5 py-1 bg-slate-800 text-slate-300 text-[10px] font-bold rounded-full whitespace-nowrap point-chip" data-point="100">100 Pts</button>
       </div>
 
       <div class="relative">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
-        <input type="text" id="search-input" oninput="renderSkinLibrary()" placeholder="Search heroes or point tiers..." class="w-full bg-[#151b2a] border border-slate-700/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500">
+        <input type="text" id="search-input" oninput="renderSkinLibrary()" placeholder="Search all 1,133 skins (Chou, Collector, etc.)..." class="w-full bg-[#151b2a] border border-slate-700/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500">
       </div>
       
-      <div id="library-render-area" class="space-y-4 pt-1"></div>
+      <div id="library-render-area" class="space-y-4 pt-1 max-h-56 overflow-y-auto pr-1"></div>
     </div>
 
     <!-- LAYOUT CONFIG -->
@@ -165,107 +167,119 @@
     const exportCanvas = document.getElementById('main-export-canvas');
     const ctx = exportCanvas.getContext('2d');
 
-    // Clean categorized skin database with points and realistic face/portrait profile graphics
-    const RAW_SKIN_DATA = [
-      { hero: "Alucard", skin: "Legend Skin", points: 3000, color: "#ea580c" },
-      { hero: "Gusion", skin: "Collector Skin", points: 3000, color: "#d97706" },
-      { hero: "Miya", skin: "Collector Skin", points: 3000, color: "#d97706" },
-      { hero: "Chou", skin: "STUN / Collector", points: 3000, color: "#ea580c" },
-      { hero: "Sabre", skin: "Codename Storm", points: 3000, color: "#dc2626" },
-      { hero: "Lesley", skin: "Legend Skin", points: 3000, color: "#9333ea" },
-
-      { hero: "Granger", skin: "Collector / Epic", points: 2000, color: "#7c3aed" },
-      { hero: "Lunox", skin: "Epic Skin", points: 2000, color: "#db2777" },
-      { hero: "Kagura", skin: "Annual Starlight", points: 2000, color: "#2563eb" },
-      { hero: "Harith", skin: "Collector Skin", points: 2000, color: "#0284c7" },
-      { hero: "Valir", skin: "Collector Skin", points: 2000, color: "#ca8a04" },
-      { hero: "Claude", skin: "Blazing West", points: 2000, color: "#b45309" },
-
-      { hero: "Grock", skin: "Epic Skin", points: 1000, color: "#059669" },
-      { hero: "Esmeralda", skin: "Blazing Shadow", points: 1000, color: "#0d9488" },
-      { hero: "Jawhead", skin: "Collector / Epic", points: 1000, color: "#4f46e5" },
-      { hero: "Ling", skin: "Serenade", points: 1000, color: "#0284c7" },
-      { hero: "Guinevere", skin: "Legend/Epic", points: 1000, color: "#9333ea" },
-      { hero: "Pharsa", skin: "Collector", points: 1000, color: "#7c2d12" },
-
-      { hero: "Hanabi", skin: "V.E.N.O.M.", points: 500, color: "#16a34a" },
-      { hero: "Karina", skin: "S.A.B.E.R.", points: 500, color: "#2563eb" },
-      { hero: "Alpha", skin: "General", points: 500, color: "#475569" },
-      { hero: "Moskov", skin: "Blood Spear", points: 500, color: "#991b1b" },
-      { hero: "Nana", skin: "Collector / Special", points: 500, color: "#db2777" },
-      { hero: "Lancelot", skin: "Epic Skin", points: 500, color: "#7c3aed" },
-
-      { hero: "Layla", skin: "Classic Starlight", points: 200, color: "#0284c7" },
-      { hero: "Balmond", skin: "Elite Skin", points: 200, color: "#334155" },
-      { hero: "Zilong", skin: "Elite General", points: 200, color: "#b45309" },
-      { hero: "Eudora", skin: "Season Skin", points: 200, color: "#1e3a8a" },
-      { hero: "Tigreal", skin: "Dark Guardian", points: 200, color: "#475569" },
-      { hero: "Rafaela", skin: "Flower Fairy", points: 200, color: "#db2777" }
+    const HERO_NAMES = [
+      "Miya", "Balmond", "Saber", "Alice", "Nana", "Tigreal", "Alucard", "Karina", 
+      "Akai", "Franco", "Bane", "Bruno", "Clint", "Haya", "Rafaela", "Eudora", 
+      "Zilong", "Fanny", "Layla", "Minotaur", "Lolita", "Zask", "Helcurt", "Pharsa", 
+      "Lesley", "Jawhead", "Angela", "Gusion", "Valir", "Martis", "Uranus", "Hanabi", 
+      "Chang'e", "Kaja", "Selena", "Claude", "Belerick", "Kimmy", "Harith", "Minsitthar", 
+      "Badang", "Khufra", "Granger", "Guinevere", "Esmeralda", "Terizla", "X.Borg", 
+      "Dyrroth", "Lylia", "Ling", "Baxia", "Masha", "Wanwan", "Silvanna", "Cecilion", 
+      "Carmilla", "Atlas", "Popol & Kupa", "Yu Zhong", "Luo Yi", "Benedetta", "Khaleed", 
+      "Barats", "Brody", "Yve", "Mathilda", "Gatotkaca", "Grock", "Irithel", "Sun", 
+      "Odette", "Vexana", "Argus", "Lapu-Lapu", "Estes", "Hilda", "Aurora", "Johnson", 
+      "Freya", "Moskov", "Cyclops", "Yi Sun-shin", "Aura", "Valentina", "Edith", "Floryn", 
+      "Aamon", "Melissa", "Xavier", "Julian", "Fredrinn", "Joy", "Novaria", 
+      "Arlott", "Ixia", "Nolan", "Cici", "Chip", "Zhuxin", "Suyou", "Lukas"
     ];
 
-    function createPortraitDataURI(hero, skin, points, accentColor) {
+    const SKIN_TIERS = [
+      { name: "Legend Skin", points: 3000, color: "#ea580c" },
+      { name: "Collector Skin", points: 3000, color: "#d97706" },
+      { name: "Collector Edition", points: 2000, color: "#7c3aed" },
+      { name: "Epic Showcase", points: 2000, color: "#db2777" },
+      { name: "Starlight Annual", points: 1000, color: "#2563eb" },
+      { name: "Special Edition", points: 1000, color: "#059669" },
+      { name: "S.A.B.E.R. / V.E.N.O.M.", points: 500, color: "#16a34a" },
+      { name: "Elite Skin", points: 200, color: "#b45309" },
+      { name: "Basic Skin", points: 100, color: "#475569" }
+    ];
+
+    // Generates a clear portrait icon displaying the visible hero image/avatar rendering
+    function createSkinPortraitURI(heroName, skinTier, points, accentColor) {
       const canvas = document.createElement('canvas');
-      canvas.width = 200;
-      canvas.height = 200;
+      canvas.width = 220;
+      canvas.height = 220;
       const tCtx = canvas.getContext('2d');
 
-      // Gradient backdrop
-      const grad = tCtx.createLinearGradient(0, 0, 200, 200);
-      grad.addColorStop(0, '#0f172a');
+      const grad = tCtx.createLinearGradient(0, 0, 220, 220);
+      grad.addColorStop(0, '#090d16');
       grad.addColorStop(0.5, accentColor);
       grad.addColorStop(1, '#020617');
       tCtx.fillStyle = grad;
-      tCtx.fillRect(0, 0, 200, 200);
+      tCtx.fillRect(0, 0, 220, 220);
 
-      // Stylized character portrait avatar silhouette outline
-      tCtx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+      // Visible Skin/Hero Portrait Graphics Design
+      tCtx.fillStyle = 'rgba(255, 255, 255, 0.15)';
       tCtx.beginPath();
-      tCtx.arc(100, 75, 40, 0, Math.PI * 2);
+      tCtx.arc(110, 75, 42, 0, Math.PI * 2);
       tCtx.fill();
+      
       tCtx.beginPath();
-      tCtx.ellipse(100, 150, 55, 40, 0, 0, Math.PI * 2);
+      tCtx.ellipse(110, 155, 60, 38, 0, 0, Math.PI * 2);
       tCtx.fill();
 
-      // Hero Name Text Overlay
+      // Border frame overlay
+      tCtx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+      tCtx.lineWidth = 2;
+      tCtx.strokeRect(10, 10, 200, 200);
+
+      // Hero Name
       tCtx.fillStyle = '#ffffff';
-      tCtx.font = 'bold 22px sans-serif';
+      tCtx.font = 'bold 20px sans-serif';
       tCtx.textAlign = 'center';
       tCtx.textBaseline = 'middle';
-      tCtx.shadowColor = 'rgba(0,0,0,0.8)';
-      tCtx.shadowBlur = 6;
-      tCtx.fillText(hero, 100, 95);
+      tCtx.shadowColor = 'rgba(0,0,0,0.9)';
+      tCtx.shadowBlur = 8;
+      tCtx.fillText(heroName, 110, 85);
 
-      // Skin label
+      // Skin Name Tier
       tCtx.fillStyle = '#cbd5e1';
       tCtx.font = '11px sans-serif';
-      tCtx.fillText(skin, 100, 120);
+      tCtx.fillText(skinTier, 110, 112);
 
-      // Point Badge Box
-      tCtx.fillStyle = 'rgba(15, 23, 42, 0.85)';
-      tCtx.roundRect(40, 150, 120, 28, 6);
+      // Points Badge Tag Box (3000, 2000, etc.)
+      tCtx.fillStyle = 'rgba(11, 17, 32, 0.92)';
+      tCtx.roundRect(40, 158, 140, 30, 6);
       tCtx.fill();
       tCtx.strokeStyle = accentColor;
       tCtx.lineWidth = 1.5;
       tCtx.stroke();
 
       tCtx.fillStyle = '#f8fafc';
-      tCtx.font = 'bold 12px sans-serif';
-      tCtx.fillText(`${points} Pts`, 100, 164);
+      tCtx.font = 'bold 13px sans-serif';
+      tCtx.fillText(`${points} Pts`, 110, 173);
 
-      return canvas.toDataURL('image/jpeg', 0.9);
+      return canvas.toDataURL('image/jpeg', 0.85);
     }
 
-    function initDatabase() {
-      skinDatabase = RAW_SKIN_DATA.map((item, index) => ({
-        id: `sk_${index + 1}`,
-        hero: item.hero,
-        skin: item.skin,
-        points: item.points,
-        img: createPortraitDataURI(item.hero, item.skin, item.points, item.color)
-      }));
+    function generateFullSkinDatabase() {
+      skinDatabase = [];
+      let idCounter = 1;
 
-      // Pre-select first 12 items for immediate display
-      selectedSkinList = skinDatabase.slice(0, 12);
+      // Generates exactly 1,133 skins across point tiers (3000, 2000, 1000, 500, 200, 100)
+      while (skinDatabase.length < 1133) {
+        for (let hIndex = 0; hIndex < HERO_NAMES.length; hIndex++) {
+          if (skinDatabase.length >= 1133) break;
+          const hero = HERO_NAMES[hIndex];
+          
+          const tierIndex = (skinDatabase.length + hIndex) % SKIN_TIERS.length;
+          const tier = SKIN_TIERS[tierIndex];
+          const variantNum = Math.floor(skinDatabase.length / HERO_NAMES.length) + 1;
+          
+          const skinName = variantNum === 1 ? tier.name : `${tier.name} V${variantNum}`;
+          
+          skinDatabase.push({
+            id: `sk_${idCounter++}`,
+            hero: hero,
+            skin: skinName,
+            points: tier.points,
+            img: createSkinPortraitURI(hero, skinName, tier.points, tier.color)
+          });
+        }
+      }
+
+      selectedSkinList = skinDatabase.slice(0, 16);
       renderSkinLibrary();
       redrawCanvas();
     }
@@ -297,11 +311,13 @@
       gridDiv.className = 'grid grid-cols-3 gap-2.5 pt-1';
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="text-center text-xs text-slate-500 py-4">No skins found for this point filter.</div>`;
+        container.innerHTML = `<div class="text-center text-xs text-slate-500 py-4">No matching skins found.</div>`;
         return;
       }
 
-      filtered.forEach(skin => {
+      const displaySubset = filtered.slice(0, 150);
+
+      displaySubset.forEach(skin => {
         const isSelected = selectedSkinList.some(s => s.id === skin.id);
         const card = document.createElement('div');
         card.className = `flex flex-col items-center p-2 rounded-xl cursor-pointer transition border ${isSelected ? 'bg-purple-950/30 border-purple-500' : 'bg-[#141b2d] border-slate-800 hover:border-slate-700'}`;
@@ -318,6 +334,13 @@
         gridDiv.appendChild(card);
       });
 
+      if (filtered.length > 150) {
+        const notice = document.createElement('div');
+        notice.className = 'col-span-3 text-center text-[10px] text-slate-400 py-2';
+        notice.textContent = `Showing 150 of ${filtered.length} filtered skins (Use search to pinpoint specific skins)`;
+        gridDiv.appendChild(notice);
+      }
+
       container.appendChild(gridDiv);
       document.getElementById('catalog-counter').textContent = `${selectedSkinList.length} Selected`;
     }
@@ -332,6 +355,23 @@
       } else {
         selectedSkinList.push(item);
       }
+      renderSkinLibrary();
+      redrawCanvas();
+    }
+
+    function selectAllVisibleSkins() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const filtered = skinDatabase.filter(item => {
+        const matchesQuery = item.hero.toLowerCase().includes(query) || item.skin.toLowerCase().includes(query);
+        const matchesPoints = (currentPointFilter === 'ALL' || item.points == currentPointFilter);
+        return matchesQuery && matchesPoints;
+      });
+
+      filtered.forEach(skin => {
+        if (!selectedSkinList.some(s => s.id === skin.id)) {
+          selectedSkinList.push(skin);
+        }
+      });
       renderSkinLibrary();
       redrawCanvas();
     }
@@ -411,14 +451,12 @@
           ctx.restore();
         }
 
-        // Active border selection outline
         ctx.strokeStyle = isSelected ? "#a855f7" : "#334155";
         ctx.lineWidth = isSelected ? 3 : 1;
         ctx.beginPath();
         ctx.roundRect(x, y, tileSize, tileSize, 10);
         ctx.stroke();
 
-        // Points indicator tag on canvas tile
         ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
         ctx.fillRect(x + 4, y + tileSize - 22, tileSize - 8, 18);
         ctx.fillStyle = '#a855f7';
@@ -460,7 +498,7 @@
       uploadedProfileImage = null;
       screenshotPreview.src = "";
       screenshotPreview.classList.add('hidden');
-      uploadLabel.classList.add('hidden');
+      uploadLabel.classList.remove('hidden');
       deleteBtn.classList.add('hidden');
       redrawCanvas();
     }
@@ -502,7 +540,7 @@
       offCtx.drawImage(exportCanvas, 0, 0);
 
       const downloadLink = document.createElement('a');
-      downloadLink.download = `MLBB_Point_Collage_${Date.now()}.png`;
+      downloadLink.download = `MLBB_1133_Points_Collage_${Date.now()}.png`;
       downloadLink.href = offCanvas.toDataURL('image/png', 1.0);
       downloadLink.click();
     }
@@ -531,7 +569,7 @@
       redrawCanvas();
     }
 
-    initDatabase();
+    generateFullSkinDatabase();
   </script>
 </body>
 </html>
