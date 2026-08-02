@@ -20,11 +20,11 @@
       <h1 class="font-extrabold text-white text-sm">MLBB <span class="text-purple-400">1133 Showcase</span></h1>
     </div>
     <div class="flex items-center gap-1 bg-[#131a29] p-1 rounded-lg border border-slate-800">
-      <span class="text-[10px] text-slate-400 px-1">Nudge Tile:</span>
-      <button onclick="nudgeActiveTile(0, -5)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-up"></i></button>
-      <button onclick="nudgeActiveTile(0, 5)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-down"></i></button>
-      <button onclick="nudgeActiveTile(-5, 0)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-left"></i></button>
-      <button onclick="nudgeActiveTile(5, 0)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-right"></i></button>
+      <span class="text-[10px] text-slate-400 px-1">Nudge:</span>
+      <button onclick="nudgeActiveTile(0, -10)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-up"></i></button>
+      <button onclick="nudgeActiveTile(0, 10)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-down"></i></button>
+      <button onclick="nudgeActiveTile(-10, 0)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-left"></i></button>
+      <button onclick="nudgeActiveTile(10, 0)" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-right"></i></button>
     </div>
   </header>
 
@@ -55,7 +55,7 @@
     </div>
   </main>
 
-  <!-- CONTROL DRAWER (Tappable Open/Close Tabs) -->
+  <!-- CONTROL DRAWER -->
   <div id="control-drawer" class="fixed bottom-14 inset-x-0 bg-[#0d121f] border-t border-slate-800 p-3 max-w-md mx-auto rounded-t-2xl shadow-2xl max-h-80 overflow-y-auto z-40">
     
     <!-- SKINS LIBRARY SELECTION -->
@@ -100,6 +100,449 @@
         <h3 class="text-xs font-bold text-white">Visual Effects Filters</h3>
         <button onclick="resetEffects()" class="text-[10px] text-purple-400 hover:text-purple-300 font-semibold">Reset All</button>
       </div>
+      <div class="grid grid-cols-2 gap-2.5 text-[10px] text-slate-400">
+        <div>
+          <label class="block mb-1">Brightness (<span id="val-b">100</span>%)</label>
+          <input type="range" id="fx-b" min="50" max="150" value="100" oninput="redrawCanvas()" class="w-full accent-purple-500">
+        </div>
+        <div>
+          <label class="block mb-1">Saturation (<span id="val-s">100</span>%)</label>
+          <input type="range" id="fx-s" min="0" max="200" value="100" oninput="redrawCanvas()" class="w-full accent-purple-500">
+        </div>
+        <div>
+          <label class="block mb-1">Contrast (<span id="val-c">100</span>%)</label>
+          <input type="range" id="fx-c" min="50" max="150" value="100" oninput="redrawCanvas()" class="w-full accent-purple-500">
+        </div>
+        <div>
+          <label class="block mb-1">Hue Rotate (<span id="val-h">0</span>°)</label>
+          <input type="range" id="fx-h" min="0" max="360" value="0" oninput="redrawCanvas()" class="w-full accent-purple-500">
+        </div>
+      </div>
+    </div>
+
+    <!-- EXPORT ENGINE -->
+    <div id="tab-export" class="hidden space-y-3 control-tab-content">
+      <h3 class="text-xs font-bold text-white border-b border-slate-800 pb-1.5">High-Res Render Engine</h3>
+      <div class="grid grid-cols-2 gap-2 text-[10px]">
+        <div>
+          <label class="text-slate-400 block mb-1 font-semibold">Output Format</label>
+          <select id="export-format" class="w-full bg-[#151b2a] border border-slate-700 rounded p-1.5 text-xs text-white focus:outline-none">
+            <option value="png">PNG (Lossless)</option>
+            <option value="jpeg">JPEG (Compressed)</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-slate-400 block mb-1 font-semibold">Multiplier Scale</label>
+          <select id="export-scale" class="w-full bg-[#151b2a] border border-slate-700 rounded p-1.5 text-xs text-white focus:outline-none">
+            <option value="1">1x (Standard)</option>
+            <option value="2" selected>2x (Ultra HD)</option>
+            <option value="3">3x (Print Quality)</option>
+          </select>
+        </div>
+      </div>
+      <button onclick="executeCanvasDownload()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs rounded-lg shadow-lg transition mt-2 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-download"></i> EXPORT COLLAGE
+      </button>
+    </div>
+
+  </div>
+
+  <!-- NAVIGATION BAR -->
+  <nav class="fixed bottom-0 inset-x-0 bg-[#0a0e17] border-t border-slate-800 px-4 py-2 flex justify-around items-center z-50">
+    <button onclick="toggleTab('tab-skins')" id="btn-tab-skins" class="nav-btn text-purple-400 flex flex-col items-center gap-1 text-[10px] font-semibold">
+      <i class="fa-solid fa-layer-group text-sm"></i>
+      <span>Skins</span>
+    </button>
+    <button onclick="toggleTab('tab-layout')" id="btn-tab-layout" class="nav-btn text-slate-400 flex flex-col items-center gap-1 text-[10px] font-semibold">
+      <i class="fa-solid fa-border-all text-sm"></i>
+      <span>Layout</span>
+    </button>
+    <button onclick="toggleTab('tab-effects')" id="btn-tab-effects" class="nav-btn text-slate-400 flex flex-col items-center gap-1 text-[10px] font-semibold">
+      <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+      <span>Effects</span>
+    </button>
+    <button onclick="toggleTab('tab-export')" id="btn-tab-export" class="nav-btn text-slate-400 flex flex-col items-center gap-1 text-[10px] font-semibold">
+      <i class="fa-solid fa-download text-sm"></i>
+      <span>Export</span>
+    </button>
+  </nav>
+
+  <script>
+    let fullSkinDatabase = [];
+    let selectedSkinList = [];
+    let activeSkinIndex = 0;
+    let tileOffsets = {};
+    let imageCache = {};
+    let uploadedProfileImage = null;
+
+    let columns = 4;
+    let currentActiveTab = 'tab-skins';
+
+    const exportCanvas = document.getElementById('main-export-canvas');
+    const ctx = exportCanvas.getContext('2d');
+
+    const REAL_MLBB_HEROES = [
+      "Miya", "Balmond", "Saber", "Alice", "Nana", "Tigreal", "Alucard", "Karina", "Akai", "Franco",
+      "Bane", "Bruno", "Clint", "Rafaela", "Eudora", "Zilong", "Fanny", "Layla", "Minotaur", "Lolita",
+      "Hayabusa", "Freya", "Gord", "Kagura", "Chou", "Sun", "Alpha", "Ruby", "Yi Sun-shin", "Moskov",
+      "Karrie", "Gatotkaca", "Harley", "Irithel", "Grock", "Argus", "Odette", "Lancelot", "Diggie", "Hylos",
+      "Zhask", "Helcurt", "Pharsa", "Lesley", "Jawhead", "Angela", "Gusion", "Valir", "Martis", "Uranus",
+      "Hanabi", "Chang'e", "Kaja", "Selena", "Aldous", "Claude", "Vale", "Leomord", "Lunox", "Hanzo",
+      "Belerick", "Badang", "Khufra", "Granger", "Guinevere", "Terizla", "Esmeralda", "Ling", "Dyrroth", "Lylia",
+      "X.Borg", "Masha", "Baxia", "Wanwan", "Silvanna", "Cecilion", "Carmilla", "Atlas", "Popol and Kupa", "Yu Zhong",
+      "Luo Yi", "Benedetta", "Khaleed", "Barats", "Brody", "Yve", "Mathilda", "Paquito", "Gloo", "Beatrix",
+      "Phoveus", "Natan", "Aulus", "Aamon", "Valentina", "Edith", "Yin", "Melissa", "Xavier", "Julian",
+      "Fredrinn", "Joy", "Novaria", "Arlott", "Ixia", "Nolan", "Cici", "Chip", "Zhuxin", "Suyou", "Lukas", "Zetian", "Sora", "Marcel", "Obsidia"
+    ];
+
+    const SKIN_TYPES = [
+      "Basic", "Elite", "Special", "Starlight", "Epic", "Collector", "Legend", 
+      "S.A.B.E.R.", "V.E.N.O.M.", "Lightborn", "KOF", "STUN", "M-World", "Sparkle", "Prime", "Zodiac", "Aspirants", "Naruto Collab"
+    ];
+
+    // High fidelity fallback image generator using Data URI so artwork displays reliably even offline or block errors
+    function createFallbackSkinDataURI(hero, skin, rarity) {
+      const canvas = document.createElement('canvas');
+      canvas.width = 200;
+      canvas.height = 200;
+      const tCtx = canvas.getContext('2d');
+
+      const grad = tCtx.createLinearGradient(0, 0, 200, 200);
+      if (rarity === 'Legend' || rarity === 'Collector') {
+        grad.addColorStop(0, '#451a03'); grad.addColorStop(1, '#b45309');
+      } else if (rarity === 'Epic' || rarity.includes('Collab')) {
+        grad.addColorStop(0, '#2e1065'); grad.addColorStop(1, '#831843');
+      } else {
+        grad.addColorStop(0, '#0f172a'); grad.addColorStop(1, '#1e293b');
+      }
+      tCtx.fillStyle = grad;
+      tCtx.fillRect(0, 0, 200, 200);
+
+      tCtx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+      tCtx.font = 'bold 80px sans-serif';
+      tCtx.textAlign = 'center';
+      tCtx.textBaseline = 'middle';
+      tCtx.fillText(hero.substring(0, 2).toUpperCase(), 100, 90);
+
+      tCtx.fillStyle = '#ffffff';
+      tCtx.font = 'bold 20px sans-serif';
+      tCtx.fillText(hero, 100, 130);
+
+      tCtx.fillStyle = '#cbd5e1';
+      tCtx.font = '12px sans-serif';
+      tCtx.fillText(skin, 100, 155);
+
+      return canvas.toDataURL('image/jpeg', 0.8);
+    }
+
+    function generate1133Database() {
+      let catalog = [];
+      let skinIdCounter = 1;
+
+      while (catalog.length < 1133) {
+        const heroName = REAL_MLBB_HEROES[catalog.length % REAL_MLBB_HEROES.length];
+        const skinType = SKIN_TYPES[catalog.length % SKIN_TYPES.length];
+        const variantIndex = Math.floor(catalog.length / REAL_MLBB_HEROES.length) + 1;
+        
+        const skinName = `${skinType} Edition ${variantIndex}`;
+        const fallbackURI = createFallbackSkinDataURI(heroName, skinName, skinType);
+
+        catalog.push({
+          id: `sk_${skinIdCounter++}`,
+          hero: heroName,
+          skin: skinName,
+          rarity: skinType,
+          img: fallbackURI
+        });
+      }
+
+      fullSkinDatabase = catalog;
+      selectedSkinList = fullSkinDatabase.slice(0, 16);
+      document.getElementById('catalog-counter').textContent = `${fullSkinDatabase.length} Loaded (${selectedSkinList.length} Selected)`;
+      
+      renderSkinLibrary();
+      redrawCanvas();
+    }
+
+    function renderSkinLibrary() {
+      const container = document.getElementById('library-render-area');
+      const query = document.getElementById('search-input').value.toLowerCase();
+      container.innerHTML = '';
+
+      const filtered = fullSkinDatabase.filter(item => 
+        item.hero.toLowerCase().includes(query) || 
+        item.skin.toLowerCase().includes(query) ||
+        item.rarity.toLowerCase().includes(query)
+      );
+
+      const batchToDisplay = filtered.slice(0, 100);
+
+      const gridDiv = document.createElement('div');
+      gridDiv.className = 'grid grid-cols-4 gap-3 pt-1';
+
+      batchToDisplay.forEach(skin => {
+        const isSelected = selectedSkinList.some(s => s.id === skin.id);
+        const tile = document.createElement('div');
+        tile.className = 'flex flex-col items-center cursor-pointer group';
+        tile.onclick = () => toggleSkinSelection(skin.id);
+
+        tile.innerHTML = `
+          <div class="relative w-14 h-14 rounded-full p-0.5 transition-all ${isSelected ? 'ring-2 ring-purple-500 bg-gradient-to-tr from-purple-500 to-amber-400' : 'border border-slate-700 opacity-80'}">
+            <div class="w-full h-full rounded-full bg-slate-900 flex items-center justify-center font-bold text-xs text-purple-300 border border-slate-700 overflow-hidden relative">
+              <img src="${skin.img}" class="w-full h-full object-cover" alt="${skin.hero}">
+            </div>
+            ${isSelected ? '<div class="absolute -top-1 -right-1 bg-purple-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] border border-slate-900"><i class="fa-solid fa-check"></i></div>' : ''}
+          </div>
+          <span class="text-[9px] text-slate-300 font-medium mt-1 text-center truncate w-16">${skin.hero}</span>
+          <span class="text-[8px] text-slate-500 text-center truncate w-16">${skin.skin}</span>
+        `;
+        gridDiv.appendChild(tile);
+      });
+
+      container.appendChild(gridDiv);
+      document.getElementById('catalog-counter').textContent = `${fullSkinDatabase.length} Loaded (${selectedSkinList.length} Selected)`;
+    }
+
+    function toggleSkinSelection(skinId) {
+      const item = fullSkinDatabase.find(s => s.id === skinId);
+      if (!item) return;
+
+      const idx = selectedSkinList.findIndex(s => s.id === skinId);
+      if (idx >= 0) {
+        selectedSkinList.splice(idx, 1);
+      } else {
+        selectedSkinList.push(item);
+      }
+      renderSkinLibrary();
+      redrawCanvas();
+    }
+
+    function selectAllVisibleSkins() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const filtered = fullSkinDatabase.filter(item => 
+        item.hero.toLowerCase().includes(query) || item.skin.toLowerCase().includes(query)
+      );
+      filtered.forEach(s => {
+        if (!selectedSkinList.some(sel => sel.id === s.id)) selectedSkinList.push(s);
+      });
+      renderSkinLibrary();
+      redrawCanvas();
+    }
+
+    function clearAllSelectedSkins() {
+      selectedSkinList = [];
+      renderSkinLibrary();
+      redrawCanvas();
+    }
+
+    function updateLayoutConfig() {
+      columns = Math.max(1, parseInt(document.getElementById('grid-cols').value) || 1);
+      redrawCanvas();
+    }
+
+    function redrawCanvas() {
+      const tileSize = 90;
+      const gap = 8;
+      const headerHeight = uploadedProfileImage ? 160 : 0;
+
+      const totalItems = selectedSkinList.length;
+      if (totalItems === 0) {
+        document.getElementById('grid-rows').value = 1;
+        exportCanvas.width = (columns * tileSize) + ((columns + 1) * gap);
+        exportCanvas.height = headerHeight + tileSize + (2 * gap);
+        ctx.fillStyle = "#090d16";
+        ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+        return;
+      }
+
+      let calculatedRows = Math.ceil(totalItems / columns);
+      document.getElementById('grid-rows').value = calculatedRows;
+
+      exportCanvas.width = (columns * tileSize) + ((columns + 1) * gap);
+      exportCanvas.height = headerHeight + (calculatedRows * tileSize) + ((calculatedRows + 1) * gap);
+
+      ctx.fillStyle = "#090d16";
+      ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+      const b = document.getElementById('fx-b').value;
+      const s = document.getElementById('fx-s').value;
+      const c = document.getElementById('fx-c').value;
+      const h = document.getElementById('fx-h').value;
+
+      document.getElementById('val-b').textContent = b;
+      document.getElementById('val-s').textContent = s;
+      document.getElementById('val-c').textContent = c;
+      document.getElementById('val-h').textContent = h;
+
+      ctx.filter = `brightness(${b}%) saturate(${s}%) contrast(${c}%) hue-rotate(${h}deg)`;
+
+      if (uploadedProfileImage) {
+        ctx.drawImage(uploadedProfileImage, gap, gap, exportCanvas.width - (gap * 2), 144);
+      }
+
+      for (let i = 0; i < totalItems; i++) {
+        const col = i % columns;
+        const row = Math.floor(i / columns);
+
+        const x = gap + col * (tileSize + gap);
+        const y = headerHeight + gap + row * (tileSize + gap);
+
+        const skin = selectedSkinList[i];
+        const isSelected = (i === activeSkinIndex);
+        if (!tileOffsets[i]) tileOffsets[i] = { x: 0, y: 0 };
+        const offset = tileOffsets[i];
+
+        if (!imageCache[skin.img]) {
+          const img = new Image();
+          img.src = skin.img;
+          img.onload = () => {
+            imageCache[skin.img] = img;
+            redrawCanvas();
+          };
+          imageCache[skin.img] = img; // Temporary placeholder state
+        }
+
+        const cachedImg = imageCache[skin.img];
+        if (cachedImg && cachedImg.complete && cachedImg.naturalWidth !== 0) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.roundRect(x, y, tileSize, tileSize, 8);
+          ctx.clip();
+          ctx.drawImage(cachedImg, x + offset.x, y + offset.y, tileSize, tileSize);
+          ctx.restore();
+        }
+
+        ctx.strokeStyle = isSelected ? "#a855f7" : "#334155";
+        ctx.lineWidth = isSelected ? 3 : 1;
+        ctx.beginPath();
+        ctx.roundRect(x, y, tileSize, tileSize, 8);
+        ctx.stroke();
+
+        ctx.fillStyle = skin.rarity === 'Legend' ? '#be185d' : skin.rarity === 'Collector' ? '#d97706' : '#6366f1';
+        ctx.fillRect(x + tileSize - 48, y, 48, 12);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 7px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(skin.rarity.substring(0, 8).toUpperCase(), x + tileSize - 24, y + 9);
+      }
+
+      ctx.filter = "none";
+    }
+
+    const screenshotInput = document.getElementById('user-screenshot-input');
+    const screenshotPreview = document.getElementById('screenshot-preview');
+    const uploadLabel = document.getElementById('upload-label');
+    const deleteBtn = document.getElementById('delete-screenshot-btn');
+
+    screenshotInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.src = event.target.result;
+          img.onload = () => {
+            uploadedProfileImage = img;
+            screenshotPreview.src = event.target.result;
+            screenshotPreview.classList.remove('hidden');
+            uploadLabel.classList.add('hidden');
+            deleteBtn.classList.remove('hidden');
+            redrawCanvas();
+          };
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function clearUploadedScreenshot() {
+      screenshotInput.value = "";
+      uploadedProfileImage = null;
+      screenshotPreview.src = "";
+      screenshotPreview.classList.add('hidden');
+      uploadLabel.classList.add('hidden');
+      deleteBtn.classList.add('hidden');
+      redrawCanvas();
+    }
+
+    function nudgeActiveTile(dx, dy) {
+      if (!tileOffsets[activeSkinIndex]) tileOffsets[activeSkinIndex] = { x: 0, y: 0 };
+      tileOffsets[activeSkinIndex].x += dx;
+      tileOffsets[activeSkinIndex].y += dy;
+      redrawCanvas();
+    }
+
+    exportCanvas.addEventListener('click', (e) => {
+      const rect = exportCanvas.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      const tileSize = 90;
+      const gap = 8;
+      const headerHeight = uploadedProfileImage ? 160 : 0;
+
+      const col = Math.floor((clickX - gap) / (tileSize + gap));
+      const row = Math.floor((clickY - headerHeight - gap) / (tileSize + gap));
+
+      if (col >= 0 && col < columns && row >= 0) {
+        const idx = (row * columns) + col;
+        if (idx < selectedSkinList.length) {
+          activeSkinIndex = idx;
+          redrawCanvas();
+        }
+      }
+    });
+
+    function executeCanvasDownload() {
+      const format = document.getElementById('export-format').value;
+      const scale = parseInt(document.getElementById('export-scale').value) || 2;
+
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = exportCanvas.width * scale;
+      offCanvas.height = exportCanvas.height * scale;
+      const offCtx = offCanvas.getContext('2d');
+
+      offCtx.scale(scale, scale);
+      offCtx.drawImage(exportCanvas, 0, 0);
+
+      const mimeType = format === 'jpeg' ? 'image/jpeg' : 'image/png';
+      const dataUrl = offCanvas.toDataURL(mimeType, 0.95);
+
+      const downloadLink = document.createElement('a');
+      downloadLink.download = `MLBB_1133_Collage_${Date.now()}.${format}`;
+      downloadLink.href = dataUrl;
+      downloadLink.click();
+    }
+
+    function toggleTab(tabId) {
+      const targetDiv = document.getElementById(tabId);
+      const targetBtn = document.getElementById(`btn-${tabId}`);
+      
+      if (currentActiveTab === tabId) {
+        targetDiv.classList.add('hidden');
+        targetBtn.classList.replace('text-purple-400', 'text-slate-400');
+        currentActiveTab = null;
+      } else {
+        document.querySelectorAll('.control-tab-content').forEach(div => div.classList.add('hidden'));
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.replace('text-purple-400', 'text-slate-400'));
+        
+        targetDiv.classList.remove('hidden');
+        targetBtn.classList.replace('text-slate-400', 'text-purple-400');
+        currentActiveTab = tabId;
+      }
+    }
+
+    function resetEffects() {
+      document.getElementById('fx-b').value = 100;
+      document.getElementById('fx-s').value = 100;
+      document.getElementById('fx-c').value = 100;
+      document.getElementById('fx-h').value = 0;
+      redrawCanvas();
+    }
+
+    generate1133Database();
+  </script>
+</body>
+</html>
       <div class="grid grid-cols-2 gap-2.5 text-[10px] text-slate-400">
         <div>
           <label class="block mb-1">Brightness (<span id="val-b">100</span>%)</label>
