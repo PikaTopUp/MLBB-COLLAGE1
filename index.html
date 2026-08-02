@@ -63,7 +63,7 @@
       <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
         <div class="flex items-center gap-2">
           <span class="text-xs font-bold text-white">Skin Library</span>
-          <span id="selected-count-badge" class="bg-purple-900/50 text-purple-300 text-[10px] px-2 py-0.5 rounded-full border border-purple-500/30">0</span>
+          <span id="selected-count-badge" class="bg-purple-900/50 text-purple-300 text-[10px] px-2 py-0.5 rounded-full border border-purple-500/30">Loading...</span>
         </div>
         <button id="clear-all-btn" class="text-[10px] text-red-400 hover:text-red-300">Clear All</button>
       </div>
@@ -143,28 +143,9 @@
   </nav>
 
   <script>
-    // Live Moonton CDN Skins Database Catalog
-    const skinCatalog = [
-      { id: "1", hero: "Franco", rarity: "Legend", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/10_9.png" },
-      { id: "2", hero: "Gord", rarity: "Legend", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/18_5.png" },
-      { id: "3", hero: "Miya", rarity: "Legend", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/1_2.png" },
-      { id: "4", hero: "Saber", rarity: "Legend", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/3_2.png" },
-      { id: "5", hero: "Alucard", rarity: "Legend", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/7_5.png" },
-      { id: "6", hero: "Granger", rarity: "Legend", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/80_6.png" },
-      { id: "7", hero: "Guinevere", rarity: "Legend", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/81_6.png" },
-      { id: "8", hero: "Freya", rarity: "Legend", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/12_8.png" },
-      { id: "9", hero: "Khufra", rarity: "Collector", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/78_5.png" },
-      { id: "10", hero: "Gusion", rarity: "KOF", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/56_6.png" },
-      { id: "11", hero: "Chou", rarity: "KOF", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/26_6.png" },
-      { id: "12", hero: "Fanny", rarity: "Aspirants", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/17_9.png" },
-      { id: "13", hero: "Layla", rarity: "Aspirants", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/18_9.png" },
-      { id: "14", hero: "Chou", rarity: "STUN", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/26_8.png" },
-      { id: "15", hero: "Brody", rarity: "STUN", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/101_3.png" },
-      { id: "16", hero: "Selena", rarity: "STUN", img: "https://akmweb.platform.moonton.com/mlbb/hero/skin/62_7.png" }
-    ];
-
-    let selectedSkinIds = ["1", "2", "3", "9", "10", "12", "14"];
-    let filteredSkins = [...skinCatalog];
+    let skinCatalog = [];
+    let filteredSkins = [];
+    let selectedSkinIds = [];
     let activeTileIndex = 0;
     let skinOffsets = {};
     let columns = 4;
@@ -172,6 +153,27 @@
 
     const gridEl = document.getElementById('skins-grid');
     const pickerGridEl = document.getElementById('picker-grid');
+
+    // Async Load Database from skins.json
+    async function loadSkinDatabase() {
+      try {
+        const res = await fetch('./skins.json');
+        skinCatalog = await res.json();
+        filteredSkins = [...skinCatalog];
+        
+        // Select initial items
+        if (skinCatalog.length > 0) {
+          selectedSkinIds = skinCatalog.slice(0, 8).map(s => s.id);
+        }
+        
+        document.getElementById('selected-count-badge').textContent = `${skinCatalog.length} Skins`;
+        renderPicker();
+        renderGrid();
+      } catch (err) {
+        console.error("Error loading skins.json:", err);
+        document.getElementById('selected-count-badge').textContent = 'Error Loading JSON';
+      }
+    }
 
     // Navigation Tabs
     document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -202,7 +204,7 @@
 
         tile.innerHTML = `
           <img src="${skin.img}" class="w-full h-full object-cover transition-transform" style="transform: translate(${offset.x}px, ${offset.y}px);" crossorigin="anonymous">
-          <div class="absolute top-0 right-0 bg-yellow-500 text-[6px] text-black font-extrabold px-0.5">${skin.rarity}</div>
+          <div class="absolute top-0 right-0 bg-yellow-500 text-[6px] text-black font-extrabold px-0.5">${skin.rarity || 'Skin'}</div>
         `;
         gridEl.appendChild(tile);
       });
@@ -224,7 +226,7 @@
     // Render Selector Library
     function renderPicker() {
       pickerGridEl.innerHTML = '';
-      filteredSkins.forEach(skin => {
+      filteredSkins.slice(0, 60).forEach(skin => {
         const isSelected = selectedSkinIds.includes(skin.id);
         const tile = document.createElement('div');
         tile.className = `relative aspect-[3/4] bg-slate-800 rounded border ${isSelected ? 'border-purple-500 ring-1 ring-purple-500' : 'border-slate-700 opacity-60'} cursor-pointer overflow-hidden`;
@@ -241,13 +243,16 @@
         `;
         pickerGridEl.appendChild(tile);
       });
-      document.getElementById('selected-count-badge').textContent = selectedSkinIds.length;
     }
 
     // Filters
     document.getElementById('skin-search-input').addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase();
-      filteredSkins = skinCatalog.filter(s => s.hero.toLowerCase().includes(q) || s.rarity.toLowerCase().includes(q));
+      filteredSkins = skinCatalog.filter(s => 
+        s.hero.toLowerCase().includes(q) || 
+        (s.skin && s.skin.toLowerCase().includes(q)) || 
+        (s.rarity && s.rarity.toLowerCase().includes(q))
+      );
       renderPicker();
     });
 
@@ -304,9 +309,8 @@
         .catch(err => console.error("Export error:", err));
     });
 
-    // Initialize
-    renderPicker();
-    renderGrid();
+    // Initialize Database
+    loadSkinDatabase();
   </script>
 </body>
 </html>
