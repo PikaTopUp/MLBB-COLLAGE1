@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MLBB Skin Point Selector & Showcase (1,133 Skins)</title>
+  <title>MLBB Complete Skin Showcase (1,133 Skins)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -17,7 +17,7 @@
   <header class="p-3 border-b border-slate-800 bg-[#0d121f] flex items-center justify-between">
     <div class="flex items-center gap-2">
       <i class="fa-solid fa-crown text-purple-400"></i>
-      <h1 class="font-extrabold text-white text-sm">MLBB <span class="text-purple-400">1,133 Point Showcase</span></h1>
+      <h1 class="font-extrabold text-white text-sm">MLBB <span class="text-purple-400">1,133 Skins Manager</span></h1>
     </div>
     <div class="flex items-center gap-1 bg-[#131a29] p-1 rounded-lg border border-slate-800">
       <span class="text-[10px] text-slate-400 px-1">Nudge:</span>
@@ -71,7 +71,7 @@
         </div>
       </div>
 
-      <!-- POINT FILTER CHIPS (3000, 2000, and so on) -->
+      <!-- POINT FILTER CHIPS -->
       <div class="flex gap-1.5 overflow-x-auto pb-1 no-scrollbar">
         <button onclick="filterByPoints('ALL')" class="px-2.5 py-1 bg-purple-600 text-white text-[10px] font-bold rounded-full whitespace-nowrap point-chip" data-point="ALL">All (1,133)</button>
         <button onclick="filterByPoints(3000)" class="px-2.5 py-1 bg-slate-800 text-slate-300 text-[10px] font-bold rounded-full whitespace-nowrap point-chip" data-point="3000">3000 Pts</button>
@@ -84,7 +84,7 @@
 
       <div class="relative">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-500 text-xs"></i>
-        <input type="text" id="search-input" oninput="renderSkinLibrary()" placeholder="Search all 1,133 skins (Chou, Collector, etc.)..." class="w-full bg-[#151b2a] border border-slate-700/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500">
+        <input type="text" id="search-input" oninput="renderSkinLibrary()" placeholder="Search all 1,133 skins..." class="w-full bg-[#151b2a] border border-slate-700/80 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white focus:outline-none focus:border-purple-500">
       </div>
       
       <div id="library-render-area" class="space-y-4 pt-1 max-h-56 overflow-y-auto pr-1"></div>
@@ -125,7 +125,7 @@
 
     <!-- EXPORT ENGINE -->
     <div id="tab-export" class="hidden space-y-3 control-tab-content">
-      <h3 class="text-xs font-bold text-white border-b border-slate-800 pb-1.5">Export Collage</h3>
+      <h3 class="text-xs font-bold text-white border-b border-slate-800 pb-1.5">Export Image</h3>
       <button onclick="executeCanvasDownload()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs rounded-lg shadow-lg transition mt-2 flex items-center justify-center gap-2">
         <i class="fa-solid fa-download"></i> DOWNLOAD IMAGE
       </button>
@@ -195,7 +195,6 @@
       { name: "Basic Skin", points: 100, color: "#475569" }
     ];
 
-    // Generates a clear portrait icon displaying the visible hero image/avatar rendering
     function createSkinPortraitURI(heroName, skinTier, points, accentColor) {
       const canvas = document.createElement('canvas');
       canvas.width = 220;
@@ -203,70 +202,62 @@
       const tCtx = canvas.getContext('2d');
 
       const grad = tCtx.createLinearGradient(0, 0, 220, 220);
-      grad.addColorStop(0, '#090d16');
+      grad.addColorStop(0, '#0b1120');
       grad.addColorStop(0.5, accentColor);
       grad.addColorStop(1, '#020617');
       tCtx.fillStyle = grad;
       tCtx.fillRect(0, 0, 220, 220);
 
-      // Visible Skin/Hero Portrait Graphics Design
-      tCtx.fillStyle = 'rgba(255, 255, 255, 0.15)';
+      tCtx.fillStyle = 'rgba(255, 255, 255, 0.12)';
       tCtx.beginPath();
-      tCtx.arc(110, 75, 42, 0, Math.PI * 2);
+      tCtx.arc(110, 75, 45, 0, Math.PI * 2);
       tCtx.fill();
       
       tCtx.beginPath();
-      tCtx.ellipse(110, 155, 60, 38, 0, 0, Math.PI * 2);
+      tCtx.ellipse(110, 155, 65, 40, 0, 0, Math.PI * 2);
       tCtx.fill();
 
-      // Border frame overlay
-      tCtx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
-      tCtx.lineWidth = 2;
-      tCtx.strokeRect(10, 10, 200, 200);
+      tCtx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+      tCtx.lineWidth = 3;
+      tCtx.strokeRect(8, 8, 204, 204);
 
-      // Hero Name
       tCtx.fillStyle = '#ffffff';
-      tCtx.font = 'bold 20px sans-serif';
+      tCtx.font = 'bold 21px sans-serif';
       tCtx.textAlign = 'center';
       tCtx.textBaseline = 'middle';
-      tCtx.shadowColor = 'rgba(0,0,0,0.9)';
-      tCtx.shadowBlur = 8;
-      tCtx.fillText(heroName, 110, 85);
+      tCtx.shadowColor = 'rgba(0,0,0,0.95)';
+      tCtx.shadowBlur = 10;
+      tCtx.fillText(heroName, 110, 82);
 
-      // Skin Name Tier
-      tCtx.fillStyle = '#cbd5e1';
+      tCtx.fillStyle = '#e2e8f0';
       tCtx.font = '11px sans-serif';
-      tCtx.fillText(skinTier, 110, 112);
+      tCtx.fillText(skinTier, 110, 110);
 
-      // Points Badge Tag Box (3000, 2000, etc.)
-      tCtx.fillStyle = 'rgba(11, 17, 32, 0.92)';
-      tCtx.roundRect(40, 158, 140, 30, 6);
+      tCtx.fillStyle = 'rgba(15, 23, 42, 0.95)';
+      tCtx.roundRect(35, 155, 150, 32, 8);
       tCtx.fill();
       tCtx.strokeStyle = accentColor;
-      tCtx.lineWidth = 1.5;
+      tCtx.lineWidth = 2;
       tCtx.stroke();
 
-      tCtx.fillStyle = '#f8fafc';
-      tCtx.font = 'bold 13px sans-serif';
-      tCtx.fillText(`${points} Pts`, 110, 173);
+      tCtx.fillStyle = '#ffffff';
+      tCtx.font = 'bold 14px sans-serif';
+      tCtx.fillText(`${points} Pts`, 110, 171);
 
-      return canvas.toDataURL('image/jpeg', 0.85);
+      return canvas.toDataURL('image/jpeg', 0.9);
     }
 
     function generateFullSkinDatabase() {
       skinDatabase = [];
       let idCounter = 1;
 
-      // Generates exactly 1,133 skins across point tiers (3000, 2000, 1000, 500, 200, 100)
       while (skinDatabase.length < 1133) {
         for (let hIndex = 0; hIndex < HERO_NAMES.length; hIndex++) {
           if (skinDatabase.length >= 1133) break;
           const hero = HERO_NAMES[hIndex];
-          
           const tierIndex = (skinDatabase.length + hIndex) % SKIN_TIERS.length;
           const tier = SKIN_TIERS[tierIndex];
           const variantNum = Math.floor(skinDatabase.length / HERO_NAMES.length) + 1;
-          
           const skinName = variantNum === 1 ? tier.name : `${tier.name} V${variantNum}`;
           
           skinDatabase.push({
@@ -324,7 +315,7 @@
         card.onclick = () => toggleSkinSelection(skin.id);
 
         card.innerHTML = `
-          <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-slate-700 mb-1">
+          <div class="relative w-16 h-16 rounded-lg overflow-hidden border border-slate-700 mb-1 bg-slate-900">
             <img src="${skin.img}" class="w-full h-full object-cover" alt="${skin.hero}">
             ${isSelected ? '<div class="absolute top-1 right-1 bg-purple-600 text-white rounded-full w-4 h-4 flex items-center justify-center text-[8px] border border-slate-900"><i class="fa-solid fa-check"></i></div>' : ''}
           </div>
@@ -337,7 +328,7 @@
       if (filtered.length > 150) {
         const notice = document.createElement('div');
         notice.className = 'col-span-3 text-center text-[10px] text-slate-400 py-2';
-        notice.textContent = `Showing 150 of ${filtered.length} filtered skins (Use search to pinpoint specific skins)`;
+        notice.textContent = `Showing 150 of ${filtered.length} filtered skins (Use search to pinpoint)`;
         gridDiv.appendChild(notice);
       }
 
@@ -498,7 +489,7 @@
       uploadedProfileImage = null;
       screenshotPreview.src = "";
       screenshotPreview.classList.add('hidden');
-      uploadLabel.classList.remove('hidden');
+      uploadLabel.classList.add('hidden');
       deleteBtn.classList.add('hidden');
       redrawCanvas();
     }
@@ -540,7 +531,7 @@
       offCtx.drawImage(exportCanvas, 0, 0);
 
       const downloadLink = document.createElement('a');
-      downloadLink.download = `MLBB_1133_Points_Collage_${Date.now()}.png`;
+      downloadLink.download = `MLBB_1133_Skins_Collage_${Date.now()}.png`;
       downloadLink.href = offCanvas.toDataURL('image/png', 1.0);
       downloadLink.click();
     }
@@ -573,4 +564,3 @@
   </script>
 </body>
 </html>
-
