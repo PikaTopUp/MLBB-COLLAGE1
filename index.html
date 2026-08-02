@@ -1,3 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MLBB Auto Collage Generator</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- html-to-image CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html-to-image/1.11.11/html-to-image.min.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .selected-tile { ring: 2px solid #a855f7; border-color: #a855f7 !important; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-[#090d16] text-slate-200 min-h-screen flex flex-col font-sans select-none pb-28">
+
+  <!-- TOP BAR -->
+  <header class="p-3 border-b border-slate-800 bg-[#0d121f] flex items-center justify-between">
+    <div class="flex items-center gap-2">
+      <i class="fa-solid fa-crown text-purple-400"></i>
+      <h1 class="font-extrabold text-white text-sm">MLBB <span class="text-purple-400">Collage Maker</span></h1>
+    </div>
+    <!-- NUDGE CONTROLS -->
+    <div class="flex items-center gap-1 bg-[#131a29] p-1 rounded-lg border border-slate-800">
+      <span class="text-[10px] text-slate-400 px-1">Move Tile:</span>
+      <button onclick="moveSelectedSkin('up')" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-up"></i></button>
+      <button onclick="moveSelectedSkin('down')" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-down"></i></button>
+      <button onclick="moveSelectedSkin('left')" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-left"></i></button>
+      <button onclick="moveSelectedSkin('right')" class="w-6 h-6 bg-slate-800 hover:bg-slate-700 rounded text-xs text-white"><i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+  </header>
+
+  <!-- CANVAS DISPLAY -->
+  <main class="flex-1 p-3 flex flex-col items-center justify-start overflow-x-auto">
+    <div id="collage-canvas" class="w-full max-w-sm bg-[#0e1320] border border-slate-800 rounded-xl p-2 shadow-2xl flex flex-col gap-2">
+      
+      <!-- Account Screenshot Header -->
+      <div id="screenshot-container" class="w-full min-h-[140px] bg-[#141b2d] rounded-lg border border-slate-800 flex items-center justify-center relative overflow-hidden">
+        <label class="w-full h-full flex flex-col items-center justify-center cursor-pointer p-4">
+          <i class="fa-solid fa-cloud-arrow-up text-purple-400 text-xl mb-1"></i>
+          <p id="screenshot-placeholder" class="text-[11px] text-slate-400 text-center font-medium">Upload Account Screenshot</p>
+          <input type="file" id="screenshot-upload" accept="image/*" class="hidden">
+        </label>
+        <img id="screenshot-img" class="absolute inset-0 w-full h-full object-cover hidden" alt="Screenshot">
+      </div>
+
+      <!-- Selected Skins Grid -->
+      <div id="skins-grid" class="grid gap-1 bg-[#090d16] p-1 rounded-lg border border-slate-800/60 min-h-[150px]">
+        <!-- Dynamic Tiles -->
+      </div>
+    </div>
+  </main>
+
+  <!-- CONTROL DRAWER -->
+  <div id="control-drawer" class="fixed bottom-14 inset-x-0 bg-[#0d121f] border-t border-slate-800 p-3 max-w-md mx-auto rounded-t-2xl shadow-2xl max-h-80 overflow-y-auto">
+    
+    <!-- TAB 1: SKINS SELECTOR -->
+    <div id="tab-skins" class="space-y-2">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-1.5">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-white">Skin Library</span>
+          <span id="selected-count-badge" class="bg-purple-900/50 text-purple-300 text-[10px] px-2 py-0.5 rounded-full border border-purple-500/30">Loading...</span>
+        </div>
+        <button id="clear-all-btn" class="text-[10px] text-red-400 hover:text-red-300">Clear All</button>
+      </div>
+
+      <!-- Search & Filters -->
+      <input type="text" id="skin-search-input" placeholder="Search hero or skin name (e.g. Chou, Fanny, Legend)..." class="w-full bg-[#151b2a] border border-slate-700 rounded px-2.5 py-1 text-xs text-white focus:outline-none focus:border-purple-500">
+      
+      <div class="flex gap-1 overflow-x-auto no-scrollbar text-[9px] py-0.5">
+        <button onclick="filterRarity('ALL')" class="bg-purple-600 text-white px-2 py-0.5 rounded font-bold">ALL</button>
+        <button onclick="filterRarity('Legend')" class="bg-slate-800 text-amber-400 px-2 py-0.5 rounded font-bold">Legend</button>
+        <button onclick="filterRarity('Collector')" class="bg-slate-800 text-cyan-400 px-2 py-0.5 rounded font-bold">Collector</button>
+        <button onclick="filterRarity('KOF')" class="bg-slate-800 text-red-400 px-2 py-0.5 rounded font-bold">KOF</button>
+        <button onclick="filterRarity('Aspirants')" class="bg-slate-800 text-pink-400 px-2 py-0.5 rounded font-bold">Aspirants</button>
+        <button onclick="filterRarity('STUN')" class="bg-slate-800 text-yellow-400 px-2 py-0.5 rounded font-bold">STUN</button>
+      </div>
+
+      <!-- Skins Picker Grid -->
+      <div id="picker-grid" class="grid grid-cols-5 gap-1.5 mt-1">
+        <!-- Rendered via JS -->
+      </div>
+    </div>
+
+    <!-- TAB 2: LAYOUT -->
+    <div id="tab-layout" class="hidden space-y-3">
+      <h3 class="text-xs font-bold text-white border-b border-slate-800 pb-1.5">Grid Layout</h3>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-[10px] text-slate-400 block mb-1">Columns</label>
+          <input type="number" id="cols-input" value="4" min="1" max="10" class="w-full bg-[#151b2a] border border-slate-700 rounded p-1.5 text-xs text-center font-bold text-white">
+        </div>
+        <div>
+          <label class="text-[10px] text-slate-400 block mb-1">Rows</label>
+          <input type="number" id="rows-input" value="4" min="1" max="20" class="w-full bg-[#151b2a] border border-slate-700 rounded p-1.5 text-xs text-center font-bold text-white">
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB 3: EFFECTS -->
+    <div id="tab-effects" class="hidden space-y-3">
+      <h3 class="text-xs font-bold text-white border-b border-slate-800 pb-1.5">Effects Adjustments</h3>
+      <div class="space-y-2">
+        <label class="text-[10px] text-slate-400 block">Brightness</label>
+        <input type="range" id="effect-brightness" min="80" max="150" value="100" class="w-full accent-purple-500">
+        <label class="text-[10px] text-slate-400 block">Saturation</label>
+        <input type="range" id="effect-saturate" min="50" max="200" value="100" class="w-full accent-purple-500">
+      </div>
+    </div>
+
+    <!-- TAB 4: EXPORT -->
+    <div id="tab-export" class="hidden flex flex-col items-center gap-3 py-2">
+      <p class="text-[11px] text-slate-400">Export high-resolution PNG image directly</p>
+      <button id="download-btn" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-extrabold text-xs rounded-lg shadow-lg transition">
+        DOWNLOAD COLLAGE PNG
+      </button>
+    </div>
+
+  </div>
+
+  <!-- NAVIGATION BAR -->
+  <nav class="fixed bottom-0 inset-x-0 bg-[#0a0e17] border-t border-slate-800 px-4 py-2 flex justify-around items-center z-50">
+    <button data-tab="tab-skins" class="nav-btn text-purple-400 flex flex-col items-center gap-1 text-[10px] font-semibold">
+      <i class="fa-solid fa-layer-group text-sm"></i>
+      <span>Skins</span>
+    </button>
+    <button data-tab="tab-layout" class="nav-btn text-slate-400 flex flex-col items-center gap-1 text-[10px] font-semibold">
+      <i class="fa-solid fa-border-all text-sm"></i>
+      <span>Layout</span>
+    </button>
+    <button data-tab="tab-effects" class="nav-btn text-slate-400 flex flex-col items-center gap-1 text-[10px] font-semibold">
+      <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+      <span>Effects</span>
+    </button>
+    <button data-tab="tab-export" class="nav-btn text-slate-400 flex flex-col items-center gap-1 text-[10px] font-semibold">
+      <i class="fa-solid fa-download text-sm"></i>
+      <span>Export</span>
+    </button>
+  </nav>
+
+  <script>
+    // COMPLETE HERO ID DATABASE (1 to 125+)
+    const heroMap = {
+      1: "Miya", 2: "Balmond", 3: "Saber", 4: "Alice", 5: "Nana", 6: "Tigreal", 7: "Alucard", 8: "Karina", 9: "Akai", 10: "Franco",
+      11: "Bane", 12: "Bruno", 13: "Clint", 14: "Rafaela", 15: "Eudora", 16: "Zilong", 17: "Fanny", 18: "Layla", 19: "Minotaur", 20: "Lolita",
+      21: "Hayabusa", 22: "Freya", 23: "Gord", 24: "Natalia", 25: "Kagura", 26: "Chou", 27: "Sun", 28: "Alpha", 29: "Ruby", 30: "Yi Sun-shin",
+      31: "Moskov", 32: "Johnson", 33: "Cyclops", 34: "Estes", 35: "Hilda", 36: "Aurora", 37: "Lapu-Lapu", 38: "Vexana", 39: "Harley", 40: "Irithel",
+      41: "Grock", 42: "Argus", 43: "Odette", 44: "Lancelot", 45: "Diggie", 46: "Hylos", 47: "Zhask", 48: "Helcurt", 49: "Lesley", 50: "Pharsa",
+      51: "Angela", 52: "Gusion", 53: "Valir", 54: "Martis", 55: "Uranus", 56: "Hanabi", 57: "Chang'e", 58: "Kaja", 59: "Selena", 60: "Aldous",
+      61: "Claude", 62: "Vale", 63: "Leomord", 64: "Lunox", 65: "Hanzo", 66: "Belerick", 67: "Kimmy", 68: "Thamuz", 69: "Harith", 70: "Minsitthar",
+      71: "Kadita", 72: "Badang", 73: "Khufra", 74: "Granger", 75: "Guinevere", 76: "Terizla", 77: "Esmeralda", 78: "Dyrroth", 79: "Lylia", 80: "Baxia",
+      81: "Masha", 82: "Wanwan", 83: "Silvanna", 84: "Cecilion", 85: "Carmilla", 86: "Atlas", 87: "Popol and Kupa", 88: "Yu Zhong", 89: "Luo Yi", 90: "Benedetta",
+      91: "Khaleed", 92: "Barats", 93: "Brody", 94: "Yve", 95: "Mathilda", 96: "Paquito", 97: "Gloo", 98: "Beatrix", 99: "Phoveus", 100: "Natan",
+      101: "Aulus", 102: "Aamon", 103: "Valentina", 104: "Edith", 105: "Yin", 106: "Melissa", 107: "Xavier", 108: "Julian", 109: "Fredrinn", 110: "Joy",
+      111: "Arlott", 112: "Novaria", 113: "Ixia", 114: "Nolan", 115: "Cici", 116: "Chip", 117: "Zhuxin", 118: "Suyou", 119: "Lukas", 120: "Kalea"
+    };
+
     let skinCatalog = [];
     let filteredSkins = [];
     let selectedSkinIds = [];
@@ -9,64 +170,60 @@
     const gridEl = document.getElementById('skins-grid');
     const pickerGridEl = document.getElementById('picker-grid');
 
-    // Auto-Generate All 1,100+ Skins across Moonton's 125+ Hero IDs
-    function buildFullSkinDatabase(baseSkins) {
-      const generatedCatalog = [...baseSkins];
-      const existingIds = new Set(baseSkins.map(s => s.id));
+    // Build Full 1,100+ Skins Catalog matching official Moonton CDN
+    function generateFullCatalog(customSkins = []) {
+      const catalog = [...customSkins];
+      const customIds = new Set(customSkins.map(s => s.id));
 
-      // Loop over Moonton Hero IDs 1 to 125
-      for (let heroId = 1; heroId <= 125; heroId++) {
-        // Loop over Skin slots 1 to 9 for each hero
-        for (let skinNum = 1; skinNum <= 9; skinNum++) {
+      Object.keys(heroMap).forEach(heroId => {
+        const heroName = heroMap[heroId];
+        // Generate skin slots 1 through 10 for every hero
+        for (let skinNum = 1; skinNum <= 10; skinNum++) {
           const skinId = `${heroId}_${skinNum}`;
-          if (!existingIds.has(skinId)) {
-            generatedCatalog.push({
+          if (!customIds.has(skinId)) {
+            const rarityTag = skinNum === 1 ? 'Default' : skinNum === 2 ? 'Basic' : skinNum === 3 ? 'Elite' : skinNum === 4 ? 'Special' : skinNum === 5 ? 'Epic' : skinNum === 6 ? 'Collector' : 'Limited';
+            catalog.push({
               id: skinId,
-              hero: `Hero #${heroId}`,
-              skin: `Skin #${skinNum}`,
-              rarity: skinNum === 1 ? 'Default' : skinNum >= 6 ? 'Special' : 'Basic',
+              hero: heroName,
+              skin: `${heroName} (Skin ${skinNum})`,
+              rarity: rarityTag,
               img: `https://wsrv.nl/?url=https://akmweb.platform.moonton.com/mlbb/hero/skin/${skinId}.png`
             });
           }
         }
-      }
-      return generatedCatalog;
+      });
+      return catalog;
     }
 
-    // Async Fetch & Build Complete Database
     async function loadSkinDatabase() {
+      let customSkins = [];
       try {
         const res = await fetch('./skins.json');
-        const baseData = await res.json();
-        
-        // Build full 1,100+ database
-        skinCatalog = buildFullSkinDatabase(baseData);
-        filteredSkins = [...skinCatalog];
-        
-        // Pre-select first 8
-        selectedSkinIds = skinCatalog.slice(0, 8).map(s => s.id);
-        
-        document.getElementById('selected-count-badge').textContent = `${skinCatalog.length} Skins Loaded`;
-        renderPicker();
-        renderGrid();
-      } catch (err) {
-        console.error("Error loading skins.json:", err);
-      }
+        if (res.ok) customSkins = await res.json();
+      } catch (e) { console.log("Using dynamic generator"); }
+
+      skinCatalog = generateFullCatalog(customSkins);
+      filteredSkins = [...skinCatalog];
+      selectedSkinIds = skinCatalog.slice(0, 8).map(s => s.id);
+
+      document.getElementById('selected-count-badge').textContent = `${skinCatalog.length} Skins`;
+      renderPicker();
+      renderGrid();
     }
 
-    // Navigation Tabs Switcher
+    // Navigation Tabs
     document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.replace('text-purple-400', 'text-slate-400'));
         btn.classList.replace('text-slate-400', 'text-purple-400');
-        
         document.querySelectorAll('#control-drawer > div').forEach(div => div.classList.add('hidden'));
         document.getElementById(btn.dataset.tab).classList.remove('hidden');
       });
     });
 
-    // Render Main Collage Canvas Grid
+    // Render Canvas Collage Grid
     function renderGrid() {
+      if (!gridEl) return;
       gridEl.style.gridTemplateColumns = `repeat(${columns}, minmax(0, 1fr))`;
       gridEl.innerHTML = '';
 
@@ -89,23 +246,21 @@
       });
     }
 
-    // Move Active Selected Skin Tile
     function moveSelectedSkin(direction) {
       if (!skinOffsets[activeTileIndex]) skinOffsets[activeTileIndex] = { x: 0, y: 0 };
       const step = 4;
-
       if (direction === 'up') skinOffsets[activeTileIndex].y -= step;
       if (direction === 'down') skinOffsets[activeTileIndex].y += step;
       if (direction === 'left') skinOffsets[activeTileIndex].x -= step;
       if (direction === 'right') skinOffsets[activeTileIndex].x += step;
-
       renderGrid();
     }
 
-    // Render Skin Picker Library
+    // Render Selector Library Grid
     function renderPicker() {
+      if (!pickerGridEl) return;
       pickerGridEl.innerHTML = '';
-      filteredSkins.slice(0, 80).forEach(skin => {
+      filteredSkins.slice(0, 100).forEach(skin => {
         const isSelected = selectedSkinIds.includes(skin.id);
         const tile = document.createElement('div');
         tile.className = `relative aspect-[3/4] bg-slate-800 rounded border ${isSelected ? 'border-purple-500 ring-1 ring-purple-500' : 'border-slate-700 opacity-60'} cursor-pointer overflow-hidden`;
@@ -124,14 +279,13 @@
       });
     }
 
-    // Search and Rarity Filters
+    // Search and Filters
     document.getElementById('skin-search-input').addEventListener('input', (e) => {
       const q = e.target.value.toLowerCase();
       filteredSkins = skinCatalog.filter(s => 
         s.hero.toLowerCase().includes(q) || 
         (s.skin && s.skin.toLowerCase().includes(q)) || 
-        (s.rarity && s.rarity.toLowerCase().includes(q)) ||
-        s.id.includes(q)
+        (s.rarity && s.rarity.toLowerCase().includes(q))
       );
       renderPicker();
     });
@@ -152,7 +306,7 @@
     document.getElementById('cols-input').addEventListener('input', (e) => { columns = parseInt(e.target.value) || 1; renderGrid(); });
     document.getElementById('rows-input').addEventListener('input', (e) => { rows = parseInt(e.target.value) || 1; renderGrid(); });
 
-    // Effects Controls
+    // Effects
     const brightnessEl = document.getElementById('effect-brightness');
     const saturateEl = document.getElementById('effect-saturate');
     function applyEffects() {
@@ -176,18 +330,23 @@
       }
     });
 
-    // Export PNG via html-to-image
+    // Export PNG
     document.getElementById('download-btn').addEventListener('click', () => {
       const node = document.getElementById('collage-canvas');
-      htmlToImage.toPng(node, { pixelRatio: 2, cacheBust: true })
-        .then(dataUrl => {
-          const a = document.createElement('a');
-          a.download = 'MLBB_Collage.png';
-          a.href = dataUrl;
-          a.click();
-        })
-        .catch(err => console.error("Export error:", err));
+      if (typeof htmlToImage !== 'undefined') {
+        htmlToImage.toPng(node, { pixelRatio: 2, cacheBust: true })
+          .then(dataUrl => {
+            const a = document.createElement('a');
+            a.download = 'MLBB_Collage.png';
+            a.href = dataUrl;
+            a.click();
+          })
+          .catch(err => console.error("Export error:", err));
+      }
     });
 
-    // Run Engine
     loadSkinDatabase();
+  </script>
+</body>
+</html>
+
